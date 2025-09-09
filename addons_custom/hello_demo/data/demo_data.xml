@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="hello_item_demo_1" model="hello.item">
+    <field name="name">示例条目</field>
+    <field name="code">D001</field>
+    <field name="note">这是安装时创建的一条演示数据。</field>
+  </record>
+</odoo>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- 列表视图 -->
+  <record id="view_hello_item_tree" model="ir.ui.view">
+    <field name="name">hello.item.tree</field>
+    <field name="model">hello.item</field>
+    <field name="type" eval="False"/>
+    <field name="arch" type="xml">
+      <list>
+        <field name="name"/>
+        <field name="code"/>
+        <field name="name_display"/>
+        <field name="active"/>
+      </list>
+    </field>
+  </record>
+
+  <!-- 表单视图 -->
+  <record id="view_hello_item_form" model="ir.ui.view">
+    <field name="name">hello.item.form</field>
+    <field name="model">hello.item</field>
+    <field name="type" eval="False"/>
+    <field name="arch" type="xml">
+      <form string="Hello Item">
+        <sheet>
+          <group>
+            <field name="name"/>
+            <field name="code"/>
+            <field name="active"/>
+            <field name="name_display" readonly="1"/>
+            <field name="note"/>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <!-- 搜索视图 -->
+  <record id="view_hello_item_search" model="ir.ui.view">
+    <field name="name">hello.item.search</field>
+    <field name="model">hello.item</field>
+    <field name="type" eval="False"/>
+    <field name="arch" type="xml">
+      <search>
+        <field name="name"/>
+        <field name="code"/>
+        <filter string="启用" name="filter_active" domain="[('active','=',True)]"/>
+        <filter string="停用" name="filter_inactive" domain="[('active','=',False)]"/>
+      </search>
+    </field>
+  </record>
+
+</odoo>

@@ -1,37 +1,69 @@
-# Odoo
+## 每次启动步骤（最短闭环）
 
-[![Build Status](https://runbot.odoo.com/runbot/badge/flat/1/master.svg)](https://runbot.odoo.com/runbot)
-[![Tech Doc](https://img.shields.io/badge/master-docs-875A7B.svg?style=flat&colorA=8F8F8F)](https://www.odoo.com/documentation/master)
-[![Help](https://img.shields.io/badge/master-help-875A7B.svg?style=flat&colorA=8F8F8F)](https://www.odoo.com/forum/help-1)
-[![Nightly Builds](https://img.shields.io/badge/master-nightly-875A7B.svg?style=flat&colorA=8F8F8F)](https://nightly.odoo.com/)
+1. **确保数据库容器在跑**
 
-Odoo is a suite of web based open source business apps.
+```bash
+# 看看是否已在运行
+docker ps -a --filter name=pg170
+# 未运行就启动
+docker start pg170
+# 快速连通性自测（可选）
+PGPASSWORD=proot psql -h 127.0.0.1 -p 5432 -U proot -d odoo -c "select 1;"
+```
 
-The main Odoo Apps include an [Open Source CRM](https://www.odoo.com/page/crm),
-[Website Builder](https://www.odoo.com/app/website),
-[eCommerce](https://www.odoo.com/app/ecommerce),
-[Warehouse Management](https://www.odoo.com/app/inventory),
-[Project Management](https://www.odoo.com/app/project),
-[Billing &amp; Accounting](https://www.odoo.com/app/accounting),
-[Point of Sale](https://www.odoo.com/app/point-of-sale-shop),
-[Human Resources](https://www.odoo.com/app/employees),
-[Marketing](https://www.odoo.com/app/social-marketing),
-[Manufacturing](https://www.odoo.com/app/manufacturing),
-[...](https://www.odoo.com/)
+> 建议用 `127.0.0.1:5432` 连接你映射出来的端口，**别用** `172.17.x.x`（容器内网 IP 可能变）。
 
-Odoo Apps can be used as stand-alone applications, but they also integrate seamlessly so you get
-a full-featured [Open Source ERP](https://www.odoo.com) when you install several Apps.
+2. **进入项目并激活 venv**
 
-## Getting started with Odoo
+```bash
+cd /d/_projects/odoo.github.rainth888
+source .venv/bin/activate
+```
 
-For a standard installation please follow the [Setup instructions](https://www.odoo.com/documentation/master/administration/install/install.html)
-from the documentation.
+3. **启动 Odoo（正常运行）**
 
-To learn the software, we recommend the [Odoo eLearning](https://www.odoo.com/slides),
-or [Scale-up, the business game](https://www.odoo.com/page/scale-up-business-game).
-Developers can start with [the developer tutorials](https://www.odoo.com/documentation/master/developer/howtos.html).
+```bash
+python odoo-bin \
+  --addons-path=addons,odoo/addons \
+  -d odoo \
+  --db_host=127.0.0.1 --db_port=5432 \
+  --db_user=proot --db_password=proot
+```
 
-## Security
+然后浏览器打开：`http://localhost:8069`
 
-If you believe you have found a security issue, check our [Responsible Disclosure page](https://www.odoo.com/security-report)
-for details and get in touch with us via email.
+---
+
+## 推荐：用配置文件更省心
+
+在项目根目录新建 `odoo.conf`：
+
+```ini
+[options]
+addons_path = addons,odoo/addons
+db_host = 127.0.0.1
+db_port = 5432
+db_user = proot
+db_password = proot
+db_name = odoo
+logfile = /tmp/odoo.log
+; http_port = 8069
+```
+
+以后只需：
+
+```bash
+python odoo-bin -c odoo.conf
+```
+
+---
+
+## 常见操作小抄
+
+* **更新某个模块**（而非全新安装 base）：
+
+  ```bash
+  python odoo-bin -c odoo.conf -u <module_name>
+  ```
+* **查看 Odoo 是否读到了两个 addons 路径**：启动日志里会打印 `addons_path=...`
+* **容器 IP 变导致连不上**：把 `db_host` 固定为 `127.0.0.1`（你已做了端口映射 `-p 5432:5432`），或把 Odoo 也放进 Docker 与 Postgres 同一自定义网络后用服务名直连。

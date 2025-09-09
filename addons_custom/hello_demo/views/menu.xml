@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- 顶层应用菜单（出现在主菜单） -->
+  <menuitem id="menu_hello_root"
+            name="Hello Demo"
+            sequence="10"
+            web_icon="base,static/description/icon.png"/>
+
+  <!-- 二级菜单：数据 -->
+  <menuitem id="menu_hello_item_root"
+            name="数据"
+            parent="menu_hello_root"
+            sequence="10"/>
+
+  <!-- 动作：打开 hello.item 的树/表单 -->
+  <record id="action_hello_item" model="ir.actions.act_window">
+    <field name="name">Hello Items</field>
+    <field name="res_model">hello.item</field>
+    <field name="view_mode">list,form</field>
+    <field name="target">current</field>
+  </record>
+
+  <!-- 菜单：列表入口 -->
+  <menuitem id="menu_hello_item"
+            name="Hello Items"
+            parent="menu_hello_item_root"
+            action="action_hello_item"
+            sequence="10"/>
+</odoo>

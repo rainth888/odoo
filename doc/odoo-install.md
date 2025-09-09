@@ -1,41 +1,130 @@
 
+# 运行总结
+
+
+## 启动docker 数据库
+- 查看状态
+docker ps -a --filter name=pg170
+
+- 启动它
+docker start pg170
+- 快速自测
+docker exec -it pg170 psql -U postgres -c "SELECT version();"
+
+- 给它补上自动重启策略（可在运行中修改）
+docker update --restart unless-stopped pg170
+
+## 启动odoo
+- 进入虚拟环境
+source .venv/bin/activate
+
+- 直接执行
+```bash
+python odoo-bin -c odoo.conf
+```
+
+- 假设容器 IP 是 172.17.0.2（请根据实际 IP 调整）
+```bash
+python odoo-bin \
+  --addons-path=addons,odoo/addons \
+  -d odoo \
+  --db_host=127.0.0.1 --db_port=5432 \
+  --db_user=proot --db_password=Qd#969kyghb!k&chFdv5axsuH+wq7
+```
+
+# 访问odoo
+浏览器打开：`http://localhost:8069`
+
+- 退出虚拟环境
+deactivate
+
+# *********************************************************************************************************************************************************
+
+# 复制模块副本
+cd /opt/odoo/custom-addons
+python /data/odoo.github.rainth888/odoo-bin scaffold sale_receipt_thermal .
+
+# shell
+# Odoo Shell 方式（推荐）
+python odoo-bin shell -d hello_demo
+
+python odoo-bin shell --addons-path=addons,addons_custom -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot -u  hello_demo
+
+# 进入交互后执行：
+env.cr.execute("SELECT id,name,type,key FROM ir_ui_view WHERE name LIKE 'hello.item%' OR key LIKE '%hello_demo%';")
+print(env.cr.fetchall())
+
+# psql 方式
+psql -U <db_user> -d <你的库> -c "SELECT id,name,type,key FROM ir_ui_view WHERE name LIKE 'hello.item%' OR key LIKE '%hello_demo%';"
+
+
+# *********************************************************************************************************************************************************
+
+
+
+# 创建数据库odoo
+
+## 连接到 PostgreSQL 容器
+docker exec -it pg170 psql -U postgres
+
+## 在 PostgreSQL 中执行以下命令：
+CREATE USER proot WITH PASSWORD 'proot';
+CREATE DATABASE odoo OWNER proot;
+GRANT ALL PRIVILEGES ON DATABASE odoo TO proot;
+\q
+
+## postgres加上强密码
+docker exec -it pg170 psql -U postgres -c  "ALTER USER postgres PASSWORD '';"
+docker exec -it pg170 psql -U postgres -d postgres -c "ALTER USER postgres WITH PASSWORD 'Qd#Asdfyghbk&chFdv629JkH+wq7';"
+
+
+## 使用新创建的数据库运行 Odoo
+python odoo-bin --addons-path=addons -d odoo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot
+python odoo-bin --addons-path=addons -d odoo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot -i base
+
+## 假设容器 IP 是 172.17.0.2（请根据实际 IP 调整）
+python odoo-bin --addons-path=addons -d odoo --db_host=172.17.0.2 --db_port=5432 --db_user=proot --db_password=proot -i base
+python odoo-bin --addons-path=addons -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot  -i base
+python odoo-bin --addons-path=addons -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot
+
+python odoo-bin --addons-path=addons,addons_custom -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot -u  hello_demo
+
+
+# ubuntu20
+python odoo-bin --addons-path=addons -d odoo --db_host=172.17.0.1 --db_port=5432 --db_user=proot --db_password=Qd#969kyghb!k&chFdv5axsuH+wq7 -i base
+
+## 给proot授权
+docker exec -it pg170 psql -U postgres -c  "ALTER USER proot CREATEDB;"
+  
+python odoo-bin --addons-path=addons -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password='Qd#969kyghb!k&chFdv5axsuH+wq7' -i base --stop-after-init
+
+python3 odoo-bin \
+  --addons-path=addons \
+  -d odoo \
+  --db_host=127.0.0.1 \
+  --db_port=5432 \
+  --db_user=proot \
+  --db_password='你的密码' \
+  -i base
+
+python odoo-bin \
+  --addons-path=addons \
+  -d odoo \
+  --db_host=127.0.0.1 \
+  --db_port=5432 \
+  --db_user=proot \
+  --db_password='Q*************H+wq7' \
+  -i base \
+  --stop-after-init
+
+# *********************************************************************************************************************************************************
+
+
+# *********************************************************************************************************************************************************
+
 
 # python3.11安装
 
-
-*********************************************************************************************************************************************************
-
-你现在遇到的 **“Unable to locate package python3.11”** 基本可以确定是 **Ubuntu 版本太旧**（WSL2 默认装的是 Ubuntu 18.04，而 **deadsnakes PPA 对 18.04 的 Python 3.11 包已经停止维护**）。  
-解决思路有两条，推荐按先后顺序尝试。
-
-------------------------------------------------
-路线 1：就地升级到 Ubuntu 20.04 / 22.04（**最快最干净**，10 分钟）
-
-1. 备份（可选但建议）
-   ```bash
-   sudo apt install -y etckeeper   # 会自动把 /etc 备份到 git
-   ```
-
-2. 升级到 20.04  
-   ```bash
-   sudo apt update && sudo apt upgrade -y
-   sudo do-release-upgrade       # 一路 y / 回车
-   ```
-   结束后会重启 WSL2（`wsl --shutdown` 再重新进入）。  
-   如果想一步到位到 22.04，可以再执行一次 `sudo do-release-upgrade -d`。
-
-3. 升级完成后再加 PPA & 安装 3.11  
-   ```bash
-   sudo apt install -y software-properties-common
-   sudo add-apt-repository ppa:deadsnakes/ppa -y
-   sudo apt update
-   sudo apt install -y python3.11 python3.11-venv python3.11-dev python3.11-distutils
-   ```
-
-4. 验证  
-   ```bash
-   python3.11 --version   # Python 3.11.x
-   ```
 
 ------------------------------------------------
 路线 2：留在 18.04，但手动编译 3.11（**不升级系统**也能用）
@@ -70,6 +159,7 @@
    source ~/.bashrc
    ```
 
+- 运行结果：
 ```
 postgres@leiyu-pc:~$ /usr/local/bin/python3.11 --version
 Python 3.11.9
@@ -86,23 +176,14 @@ Use exit() or Ctrl-D (i.e. EOF) to exit
 postgres@leiyu-pc:~$
 ```
 
-
-需要，但只需 **一条命令** 就能给刚编译好的 3.11 装上专属 pip，且不会影响系统自带 3.6：
+## 3.11 安装 pip：
 
 ```bash
 # 用 3.11 自带的 ensurepip 装（最简）
 /usr/local/bin/python3.11 -m ensurepip --upgrade
 ```
 
-或传统方案（二选一即可）：
-
-```bash
-# 方案 2：官方 get-pip.py
-curl -sS https://bootstrap.pypa.io/get-pip.py | sudo /usr/local/bin/python3.11
-```
-
 验证：
-
 ```bash
 /usr/local/bin/python3.11 -m pip --version
 # 输出示例：pip 24.2 from /usr/local/lib/python3.11/site-packages/pip (python 3.11)
@@ -114,41 +195,53 @@ curl -sS https://bootstrap.pypa.io/get-pip.py | sudo /usr/local/bin/python3.11
 *********************************************************************************************************************************************************
 # py311进入虚拟环境
 
-针对odoo系统路径/d/_projects/odoo.github.rainth888，要进行pip编译，那么py311如何进入虚拟环境
-
-下面给你几种常见场景下，用 **Python 3.11（py311）创建并进入虚拟环境** 的最简步骤。你要操作的 Odoo 目录是
-`D:\_projects\odoo.github.rainth888`（WSL 下路径为 `/mnt/d/_projects/odoo.github.rainth888`）。
-
----
-
-## A. 在 **WSL2（Ubuntu/Debian）** 里操作
-
-> 建议：在 WSL 的 Linux 文件系统里建 venv（速度更快），代码目录仍可在 `/mnt/d/...`。
-
-1. 安装 Python3.11 及 venv 组件（若未安装）
-
 ```bash
+# 先更新系统
 sudo apt update
-sudo apt install -y python3.11 python3.11-venv
-```
+sudo apt install -y \
+  build-essential pkg-config \
+  libxml2-dev libxslt1-dev        # lxml
+  libpq-dev                        # psycopg2
+  libldap2-dev libsasl2-dev       # python-
 
-2. 进入项目目录并创建虚拟环境
-
-```bash
-cd /mnt/d/_projects/odoo.github.rainth888
 python3.11 -m venv .venv
-
-
-```
-
-3. \*\*进入（激活）\*\*虚拟环境
-
-```bash
 source .venv/bin/activate
 # 验证
 python -V     # Python 3.11.x
 pip -V
+python -m pip install --upgrade pip wheel setuptools
+python -m pip install Babel
+
+# 1) 安装编译依赖 + libpq（提供 pg_config）
+apt-get update
+apt-get install -y build-essential libpq-dev pkg-config
+
+# （若随后遇到 “Python.h: No such file or directory” 再补）
+# apt-get install -y python3.11-dev  || apt-get install -y python3-dev
+
+# 2) 验证 pg_config 是否就绪
+pg_config --version
+
+# 3) 先单独装 psycopg2（可见报错更清楚），再装全体依赖
+python -m pip install -U pip wheel setuptools
+pip install --no-cache-dir psycopg2==2.9.5
+
+sudo apt-get update
+sudo apt-get install -y \
+  build-essential pkg-config \
+  libldap2-dev libsasl2-dev \
+  libssl-dev libffi-dev
+# 可选：若需要 Python 头文件再补（通常不必，但备着）
+# sudo apt-get install -y python3-dev
+
+
+# 如果项目有 requirements.txt：
+pip install -r requirements.txt
+# 国内可加镜像，例如：
+# pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
+
+
 - 运行结果：
 ```
 bill@leiyu-pc:/d/_projects/odoo.github.rainth888$ python3.11 -m venv .venv
@@ -158,18 +251,6 @@ Python 3.11.9
 (.venv) bill@leiyu-pc:/d/_projects/odoo.github.rainth888$ pip -V
 pip 24.0 from /mnt/d/_projects/odoo.github.rainth888/.venv/lib/python3.11/site-packages/pip (python 3.11)
 (.venv) bill@leiyu-pc:/d/_projects/odoo.github.rainth888$
-```
-
-
-
-4. 安装依赖 / 编译（pip 装包）
-
-```bash
-python -m pip install --upgrade pip wheel setuptools
-# 如果项目有 requirements.txt：
-pip install -r requirements.txt
-# 国内可加镜像，例如：
-# pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 运行结果：
@@ -202,264 +283,25 @@ Successfully installed pip-25.2 setuptools-80.9.0 wheel-0.45.1
 (.venv) bill@leiyu-pc:/d/_projects/odoo.github.rainth888$
 ```
 
-
-
 5. 退出虚拟环境
 
 ```bash
 deactivate
 ```
 
----
 
-## B. 在 **Windows PowerShell** 里操作（不进 WSL）
-
-> 需要已安装 Windows 版 Python 3.11（带 *Python Launcher* 更方便）。
-
-1. 创建虚拟环境（项目根目录执行）
-
-```powershell
-cd D:\_projects\odoo.github.rainth888
-py -3.11 -m venv .venv
-```
-
-2. \*\*进入（激活）\*\*虚拟环境
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-# 若被执行策略拦截，可临时放开：
-# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-```
-
-（CMD 用法：`.\.venv\Scripts\activate.bat`；Git Bash：`source .venv/Scripts/activate`）
-
-3. 安装依赖
-
-```powershell
-python -m pip install --upgrade pip wheel setuptools
-pip install -r requirements.txt
-```
-
-4. 退出
-
-```powershell
-deactivate
-```
-
----
-
-## C. 性能优化建议（可选）
-
-* WSL2 在 `/mnt/d` 上 I/O 略慢。可在 WSL **家目录**建 venv，例如：
-
-  ```bash
-  python3.11 -m venv ~/venvs/odoo311
-  source ~/venvs/odoo311/bin/activate
-  # 然后针对挂载的代码目录安装
-  pip install -e /mnt/d/_projects/odoo.github.rainth888
-  ```
-* VS Code：在工作区选择 Python 解释器为 **项目根/.venv**（或 `~/venvs/odoo311`）。
-
----
-
-## D. 常见问题
-
-* `python3.11: command not found` → 先 `sudo apt install python3.11 python3.11-venv`。
-* `Activate.ps1 被阻止` → PowerShell 临时执行：`Set-ExecutionPolicy -Scope Process Bypass`。
-* 需代理安装依赖：沿用你之前的 WSL 代理环境变量（`http_proxy/https_proxy`），或为 pip 指定镜像源。
-
-> 总结：**创建** `python3.11 -m venv .venv`（或 `py -3.11 -m venv .venv`），**进入** `source .venv/bin/activate`（WSL）或 `.\.venv\Scripts\Activate.ps1`（PowerShell），然后 `pip install -r requirements.txt` 即可。
-
-*********************************************************************************************************************************************************
-
-安装下面这个扩展包，怎么在py311下执行：
-sudo apt install python3-pip libldap2-dev libpq-dev libsasl2-dev
-
-你这台机器里已经有 **Python 3.11**（`python3.11` 可以启动），所以 `apt` 再去装 `python3.11 / python3.11-venv` 才会提示“找不到该包”（你的 3.11 多半是源码安装/pyenv，不是 APT 管理的版本）。
-结论：**不用 apt 装 3.11**，直接装系统级依赖，然后用现有的 `python3.11` 建虚拟环境即可。
-
-按下面做就行（WSL2 里执行）：
-
----
-
-## 1) 装系统级依赖（给 C 扩展编译用）
-
-```bash
-sudo apt update
-sudo apt install -y \
-  build-essential libldap2-dev libpq-dev libsasl2-dev \
-  libssl-dev libffi-dev pkg-config
-# 验证 pg 客户端头/工具是否就绪
-pg_config --version
-```
-
-> 这些库用于编译 `python-ldap`（需要 `libldap2-dev`/`libsasl2-dev`）和 `psycopg2`（需要 `libpq-dev`）。
-> `python3-pip` 可装可不装；虚拟环境里自带 pip。
-
----
-
-## 2) 在项目目录创建并进入 **py311** 虚拟环境
-
-```bash
-cd /mnt/e/_projects/odoo.github.rainth888   # 你的路径在 WSL 下是 /mnt/e/...
-python3.11 -m venv .venv
-source .venv/bin/activate
-
-# 如提示没有 pip，则：
-python -m ensurepip --upgrade
-
-python -V      # 应显示 Python 3.11.x
-pip -V
-```
-
----
-
-## 3) 升级打包工具并安装依赖（pip 编译）
-
-```bash
-python -m pip install --upgrade pip setuptools wheel
-
-# 如果你有 requirements.txt：
-pip install -r requirements.txt
-
-# 或单独安装常见包（示例）：
-pip install psycopg2            # 用 libpq-dev 编译（推荐）
-# 或开发调试时临时：
-# pip install psycopg2-binary
-
-pip install python-ldap         # 需要 libldap2-dev / libsasl2-dev
-```
-
-快速验证：
-
-```bash
-python -c "import psycopg2,ldap,sys; print(sys.version); print(psycopg2.__version__)"
-```
-
----
-
-## 4) 常见问题排查
-
-* `fatal error: sasl.h: No such file or directory` → 安装 `libsasl2-dev`。
-* `pg_config not found` → 安装 `libpq-dev`（已在第 1 步）。
-* `No module named ensurepip` → 你的 3.11 是最小化编译，先 `sudo apt install python3-venv`（针对系统 Python），或重新编译启用 ensurepip；临时也可用 `get-pip.py`。
-* `/mnt/e` 上 I/O 慢 → 可把 venv 建在 WSL 的 Linux 磁盘（如 `~/venvs/odoo311`），再对 `/mnt/e/...` 安装：
-
-  ```bash
-  python3.11 -m venv ~/venvs/odoo311
-  source ~/venvs/odoo311/bin/activate
-  pip install -e /mnt/e/_projects/odoo.github.rainth888
-  ```
-
----
-
-## 可选：一定要用 APT 安装 3.11？
-
-* **Ubuntu 20.04/22.04** 可用 **deadsnakes** PPA：`sudo add-apt-repository ppa:deadsnakes/ppa && sudo apt install python3.11 python3.11-venv`
-* **Debian 老版本**可用 backports。
-  不过你当前已能用 `python3.11`，**没必要再装 apt 版**。
-
----
-
-接下来你就可以在这个 `.venv` 里执行 Odoo 的 pip 安装/编译了。需要的话我可以帮你把项目的 `requirements.txt`（或 Odoo 指定依赖）整理成国内镜像的一键安装命令。
+##  总结：
+> 
+**创建** `python3.11 -m venv .venv`（或 `py -3.11 -m venv .venv`），
+**进入** `source .venv/bin/activate`（WSL）或 `.\.venv\Scripts\Activate.ps1`（PowerShell），
+然后 `pip install -r requirements.txt` 即可。
 
 
 
 *********************************************************************************************************************************************************
-python3 odoo-bin --addons-path=addons -d pdemo
-py311 odoo-bin --addons-path=addons -d pdemo
 
+# postpresql17安装
 
-创建数据库odoo
-
-# 连接到 PostgreSQL 容器
-docker exec -it pg170 psql -U postgres
-
-# 在 PostgreSQL 中执行以下命令：
-CREATE USER proot WITH PASSWORD 'proot';
-CREATE DATABASE odoo OWNER proot;
-GRANT ALL PRIVILEGES ON DATABASE odoo TO proot;
-\q
-
-# 使用新创建的数据库运行 Odoo
-python odoo-bin --addons-path=addons -d odoo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot
-python odoo-bin --addons-path=addons -d odoo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot -i base
-
-# 假设容器 IP 是 172.17.0.2（请根据实际 IP 调整）
-python odoo-bin --addons-path=addons -d odoo --db_host=172.17.0.2 --db_port=5432 --db_user=proot --db_password=proot -i base
-
-*********************************************************************************************************************************************************
-
-# 模块安装
-
-是的，完全可以！Odoo 支持动态安装和卸载模块，这是它的一个重要特性。
-
-**后续安装模块的方法：**
-
-**1. 通过命令行安装：**
-```bash
-# 安装单个模块
-python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot -i sale
-
-# 安装多个模块
-python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot -i sale,purchase,stock
-
-# 更新已安装的模块
-python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot -u sale
-```
-
-**2. 通过 Web 界面安装（推荐）：**
-```bash
-# 先启动 Odoo 服务
-python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot
-
-# 然后在浏览器中访问：http://localhost:8069
-# 使用管理员账户登录后，可以：
-# - 进入 Apps 菜单
-# - 搜索需要的模块
-# - 点击 Install 按钮安装
-```
-
-**3. 常用模块组合：**
-```bash
-# 基础业务模块
-python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot -i sale,purchase,stock
-
-# 人力资源模块
-python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot -i hr,hr_recruitment,hr_timesheet
-
-# CRM 模块
-python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot -i crm,crm_livechat
-```
-
-**4. 模块管理命令：**
-```bash
-# 列出已安装的模块
-python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot --list-modules
-
-# 卸载模块（谨慎使用）
-python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot --uninstall-module sale
-```
-
-**重要提示：**
-- 安装新模块时，Odoo 会自动处理模块间的依赖关系
-- 某些模块卸载可能会影响数据完整性，建议在测试环境中先尝试
-- 通过 Web 界面安装更直观，可以预览模块功能
-- 建议先安装基础模块（如 `base`），再根据需要逐步添加其他模块
-
-所以你现在可以放心地只安装 `base` 模块来初始化数据库，后续需要什么功能再随时添加对应的模块！
-
-
-
-
-*********************************************************************************************************************************************************
-# postpresql17安装总结
-
-结合上面的过程，详细叙述一下wsl2下，docker操作postpresql17的安装、启动、检测、配置用户名/密码/库、状态检查，已经如何远程访问等。
-
-下面把你刚才在 WSL2 里用 Docker 跑 **PostgreSQL 17.0** 的全过程梳理成一份可执行“作业手册”，涵盖：安装 → 启动 → 自检 → 创建账户/数据库 → 运行状态检查 → 远程访问（含常见故障排查）。
-
----
 
 ## 0) 前置确认
 
@@ -472,6 +314,7 @@ python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --d
 自检：
 
 ```bash
+apt  install docker.io  # version 26.1.3-0ubuntu1~20.04.1
 docker version
 docker run --rm hello-world
 ```
@@ -485,6 +328,7 @@ docker run --rm hello-world
 ```bash
 # 创建数据目录（宿主机）
 mkdir -p $HOME/pg17-data
+mkdir -p pg17-data
 
 # 启动容器（固定 17.0；想跟随 17.x 最新补丁可改为 postgres:17）
 docker run -d --name pg170 \
@@ -493,6 +337,15 @@ docker run -d --name pg170 \
   -p 5432:5432 \
   -v $HOME/pg17-data:/var/lib/postgresql/data \
   postgres:17.0
+
+# ubuntu20  
+docker run -d --name pg170 \
+  --restart unless-stopped \
+  -e POSTGRES_PASSWORD=postgres \
+  -p 5432:5432 \
+  -v /data/pg17-data:/var/lib/postgresql/data \
+  postgres:17.0
+
 ```
 
 > 如果 `-p 5432:5432` 报“address already in use”，说明宿主 5432 被占：
@@ -535,39 +388,21 @@ docker run -d --name pg170 \
   -p 5432:5432 \
   -v $HOME/pg17-data:/var/lib/postgresql/data \
   postgres:17.0
+
+# ubuntu20  
+docker rm -f pg170
+rm -rf /data/pg17-data/*   # ⚠️ 清空旧数据（谨慎）
+docker run -d --name pg170 \
+  --restart unless-stopped \
+  -e POSTGRES_USER=proot \
+  -e POSTGRES_PASSWORD=proot \
+  -e POSTGRES_DB=odoo \
+  -p 5432:5432 \
+  -v /data/pg17-data:/var/lib/postgresql/data \
+  postgres:17.0  
 ```
 
-### 方式 B：**事后用 SQL 幂等创建/修改**
 
-> 适合已经跑起来的实例（你刚才就是这样做的）。
-
-```bash
-docker exec -i pg170 psql -U postgres <<'SQL'
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='proot') THEN
-    CREATE ROLE proot LOGIN PASSWORD 'proot';
-  ELSE
-    ALTER ROLE proot WITH LOGIN PASSWORD 'proot';
-  END IF;
-END$$;
-
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT FROM pg_database WHERE datname='pdemo') THEN
-    CREATE DATABASE pdemo OWNER proot;
-  END IF;
-END$$;
-
-GRANT ALL PRIVILEGES ON DATABASE pdemo TO proot;
-
-\c pdemo
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-SQL
-```
-
----
 
 ## 4) 常用运行状态与管理
 
@@ -588,151 +423,79 @@ docker stop pg170
 docker rm -f pg170
 ```
 
-### （可选）为容器加健康检查
 
+
+
+
+
+## 模块安装
+
+是的，完全可以！Odoo 支持动态安装和卸载模块，这是它的一个重要特性。
+
+**后续安装模块的方法：**
+
+**1. 通过命令行安装：**
 ```bash
-docker rm -f pg170
-docker run -d --name pg170 \
-  --restart unless-stopped \
-  --health-cmd='pg_isready -U postgres -h 127.0.0.1 -p 5432 || exit 1' \
-  --health-interval=10s --health-timeout=3s --health-retries=3 \
-  -e POSTGRES_PASSWORD=postgres \
-  -p 5432:5432 \
-  -v $HOME/pg17-data:/var/lib/postgresql/data \
-  postgres:17.0
+# 安装单个模块
+python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot -i sale
 
-# 查看健康状态
-docker inspect --format='{{json .State.Health}}' pg170 | jq
+# 安装多个模块
+python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot -i sale,purchase,stock
+
+# 更新已安装的模块
+python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot -u sale
 ```
 
----
-
-## 5) 从哪里连？（本机 / Windows / 其他机器）
-
-### A) 本机（WSL/Windows）连接
-
-* 主机（Host）：`localhost`
-* 端口（Port）：你映射的端口（上文 5432）
-* 用户：`proot`（或 `postgres`）
-* 数据库：`pdemo`
-* 密码：`proot`（或你设置的）
-
-命令行示例：
-
+**2. 通过 Web 界面安装（推荐）：**
 ```bash
-psql "host=localhost port=5432 user=proot dbname=pdemo password=proot"
+# 先启动 Odoo 服务
+python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot
+
+# 然后在浏览器中访问：http://localhost:8069
+# 使用管理员账户登录后，可以：
+# - 进入 Apps 菜单
+# - 搜索需要的模块
+# - 点击 Install 按钮安装
+
+# ubuntu20
+# 然后在浏览器中访问：http://103.100.211.232:8069
+
 ```
 
-GUI：DBeaver / pgAdmin 直接填上面参数。
-
-> **Docker Desktop** 场景：Windows 直接 `localhost:5432`。
-> **WSL 原生 Engine**：Win11 通常也能直连 `localhost`；不行的话，查 WSL 网关 IP：
->
-> ```bash
-> ip route | awk '/default/ {print $3}'
-> # 得到形如 172.19.128.1，然后在 Windows 用 172.19.128.1:5432 连接
-> ```
-
-### B) 外部机器访问（谨慎）
-
-1. 确认端口映射到 0.0.0.0（默认 `-p 5432:5432` 就是）。
-2. Windows 防火墙放行 5432（Docker Desktop 绑定在 Windows 上）：
-
-   * 允许入站规则，或临时关闭专用网络阻拦。
-3. **安全**：仅在内网开放，强密码；必要时限制来源（见下一节 pg\_hba）。
-
----
-
-## 6) 调整 `postgresql.conf` / `pg_hba.conf`（网络访问控制）
-
-官方镜像的数据目录挂载在容器 `/var/lib/postgresql/data`。进入容器修改：
-
+**3. 常用模块组合：**
 ```bash
-docker exec -it pg170 bash
+# 基础业务模块
+python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot -i sale,purchase,stock
 
-# 主配置
-vi /var/lib/postgresql/data/postgresql.conf
-# 如需：listen_addresses = '*'
+# 人力资源模块
+python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot -i hr,hr_recruitment,hr_timesheet
 
-# 访问控制（基于客户端网段）
-vi /var/lib/postgresql/data/pg_hba.conf
-# 例如允许内网 192.168.0.0/16 使用密码连接：
-# host  all  all  192.168.0.0/16  md5
-
-exit
-docker restart pg170
+# CRM 模块
+python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot -i crm,crm_livechat
 ```
 
-> 仅本机访问时，默认配置即可；对外开放时，一定要在 `pg_hba.conf` 里**精确白名单**来源网段，切勿对公网裸露。
-
----
-
-## 7) 备份与恢复（建议日常操作）
-
+**4. 模块管理命令：**
 ```bash
-# 备份单库（自带压缩）
-docker exec pg170 pg_dump -U postgres -Fc pdemo > ~/pg17-backups/pdemo_$(date +%F_%H%M%S).dump
+# 列出已安装的模块
+python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot --list-modules
 
-# 恢复（确保目标库存在或提前 CREATE DATABASE）
-docker exec -i pg170 pg_restore -U postgres --clean --if-exists -d pdemo < ~/pg17-backups/pdemo_2025-08-27_120000.dump
-
-# 全库备份（含角色/库定义）
-docker exec pg170 pg_dumpall -U postgres > ~/pg17-backups/cluster_$(date +%F_%H%M%S).sql
+# 卸载模块（谨慎使用）
+python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --db_user=proot --db_password=proot --uninstall-module sale
 ```
 
----
+**重要提示：**
+- 安装新模块时，Odoo 会自动处理模块间的依赖关系
+- 某些模块卸载可能会影响数据完整性，建议在测试环境中先尝试
+- 通过 Web 界面安装更直观，可以预览模块功能
+- 建议先安装基础模块（如 `base`），再根据需要逐步添加其他模块
 
-## 8) 小版本升级（17.0 → 17.x）
-
-同大版本可平滑切换镜像，复用数据目录：
-
-```bash
-docker pull postgres:17
-docker stop pg170 && docker rm pg170
-docker run -d --name pg170 \
-  --restart unless-stopped \
-  -e POSTGRES_PASSWORD=postgres \
-  -p 5432:5432 \
-  -v $HOME/pg17-data:/var/lib/postgresql/data \
-  postgres:17
-```
-
----
-
-## 9) 常见故障速排
-
-* **端口冲突**：`sudo ss -ltnp | grep :5432` → 改映射为 `-p 5433:5432` 或停掉占用者（例如 `sudo pg_ctlcluster <ver> main stop`）。
-* **拉镜像 DNS 失败**：为 Docker 守护进程配置 DNS（`/etc/docker/daemon.json`）：
-
-  ```json
-  { "dns": ["1.1.1.1","8.8.8.8"] }
-  ```
-
-  重启 Docker 服务。
-* **WSL 没 systemd，`systemctl` 不能用**：在 `/etc/wsl.conf` 写：
-
-  ```ini
-  [boot]
-  systemd=true
-  ```
-
-  然后 `wsl --shutdown`。
-* **代理网络**：给 Docker 守护进程设置代理（或在 Docker Desktop 的 Proxies 里配置）。
-* **性能差**：避免把数据目录挂到 `/mnt/c/...`；优先使用 WSL 原生 Linux 路径。
-
----
-
-> 你已经把核心流程跑通了：容器名 `pg170`、数据卷 `$HOME/pg17-data`、端口 `5432`、并成功查询版本。上面这份手册可以当作“标准操作流程”。如果你愿意，我可以把常用命令整合成一个菜单脚本（启动/停止/创建用户库/备份恢复/健康检查/升级）。
-
+所以你现在可以放心地只安装 `base` 模块来初始化数据库，后续需要什么功能再随时添加对应的模块！
 
 
 *********************************************************************************************************************************************************
 
-你这次报错的根因有三点：
 
-1. `CREATE DATABASE` 不能在 `DO $$ ... $$;` 里执行（它相当于函数/事务块内执行，PG 会拒绝）。
-2. 你的 heredoc 中间有复制粘贴残留（`IF NOT EXISTS (SELECT FROM pg>`、`GES ON DATABASE >` 等），把 SQL 打断了。
-3. 你在 `\c pdemo` 切库之前，`pdemo` 还没成功创建，自然会报 “database does not exist”。
+# postgreSQL 数据库创建
 
 下面给出**正确的三步式写法**（角色用 DO；建库用 `\gexec`，这样不在事务里；最后再切库建扩展）。可以直接复制逐段执行——每段都可反复执行，幂等。
 
@@ -903,10 +666,6 @@ python odoo-bin --addons-path=addons -d pdemo --db_host=pg170 --db_port=5432 --d
 
 ```
 
-
-
-# 太棒了！从你贴的结果看，一切都成功了：
-
 * 角色 **proot** 已创建（`\du+ proot` 显示存在；无特殊属性=正常）。
 * 数据库 **pdemo** 已创建，**Owner=proot**。
 * 扩展 **pg\_trgm**、**uuid-ossp** 已在 **pdemo** 中启用（`\dx` 显示 ok）。
@@ -1016,9 +775,6 @@ docker exec pg170 pg_dump -U postgres -Fc pdemo > ~/pg17-backups/pdemo_$(date +%
 docker exec -i pg170 pg_restore -U postgres --clean --if-exists -d pdemo < ~/pg17-backups/pdemo_xxx.dump
 ```
 
----
-
-有需要我把这些命令打包成一个“菜单脚本”（一键：初始化/自测/远程开关/备份恢复）吗？你直接运行、选项式操作就行。
 
 
 ## 问题
@@ -1186,174 +942,8 @@ bill@leiyu-pc:~$
 telnet 172.19.134.133是成功的，但是使用客户端数据库连接工具navicat premium就连接不上，显示见附件。
 
 
-
-*********************************************************************************************************************************************************
-
-
-
-
-
-*********************************************************************************************************************************************************
-
-
-
-
-
-*********************************************************************************************************************************************************
-
-下面给你 **WSL2 下安装 PostgreSQL 17.0** 的三种做法。差异在于你是否“必须精确就是 17.0”。如果不一定非 17.0，小版本用最新最安全的 **17.x** 更合适（方案 A）。若**严格要求 17.0**，用 **源码编译**（方案 B）或 **Docker 指定镜像标签**（方案 C）。
-
----
-
-## ✅ 方案 A：APT 安装（得到 17 系列最新小版本，最省心）
-
-> 适用于 WSL2 的 Ubuntu/Debian。包名是 `postgresql-17`，安装的是 **17.x 的最新补丁版**（不是 17.0 原始版，但更安全）。
-
-```bash
-# 1) 加官方 PGDG APT 源
-sudo apt update
-sudo apt install -y wget gnupg lsb-release
-wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc \
- | sudo gpg --dearmor -o /usr/share/keyrings/pgdg.gpg
-echo "deb [signed-by=/usr/share/keyrings/pgdg.gpg] http://apt.postgresql.org/pub/repos/apt/ \
-$(lsb_release -cs)-pgdg main" \
- | sudo tee /etc/apt/sources.list.d/pgdg.list
-sudo apt update
-
-# 2) 安装 17 系列
-sudo apt install -y postgresql-17 postgresql-client-17
-```
-
-**启动方式（按你是否开启了 systemd 选择）**
-
-* 若 WSL2 已启用 systemd：
-
-  ```bash
-  sudo systemctl enable --now postgresql
-  sudo systemctl status postgresql
-  ```
-* 未启用 systemd：
-
-  ```bash
-  sudo pg_ctlcluster 17 main start
-  sudo pg_lsclusters
-  ```
-
-**验证：**
-
-```bash
-sudo -u postgres psql -c "SELECT version();"
-```
-
-**配置文件（默认路径）：**
-`/etc/postgresql/17/main/postgresql.conf`、`pg_hba.conf`
-**数据目录：** `/var/lib/postgresql/17/main`
-
-> 允许从 Windows 连接 WSL：在 `postgresql.conf` 设 `listen_addresses='*'`；在 `pg_hba.conf` 增加你的子网白名单（如 `host all all 172.19.0.0/16 md5`），然后重启。
-
----
-
-## 🎯 方案 B：源码编译“精确 17.0”（严格版本要求时用）
-
-> 17.0 是最初发布的小版本，**不含后续安全补丁**。建议仅用于复现/兼容性测试。
-
-```bash
-# 1) 依赖
-sudo apt update
-sudo apt install -y build-essential libreadline-dev zlib1g-dev \
-  flex bison libssl-dev libxml2-dev libxslt1-dev libicu-dev \
-  tcl-dev libperl-dev libpython3-dev pkg-config
-
-# 2) 下载并编译 v17.0
-cd /tmp
-wget https://ftp.postgresql.org/pub/source/v17.0/postgresql-17.0.tar.gz
-tar xf postgresql-17.0.tar.gz
-cd postgresql-17.0
-./configure --prefix=/usr/local/pgsql-17.0 \
-  --with-openssl --with-libxml --with-libxslt --with-icu
-make -j"$(nproc)"
-sudo make install
-
-# 3) 初始化与启动
-sudo useradd -r -s /bin/false postgres 2>/dev/null || true
-sudo mkdir -p /usr/local/pgsql-17.0/data
-sudo chown -R postgres:postgres /usr/local/pgsql-17.0
-
-sudo -u postgres /usr/local/pgsql-17.0/bin/initdb -D /usr/local/pgsql-17.0/data
-sudo -u postgres /usr/local/pgsql-17.0/bin/pg_ctl \
-  -D /usr/local/pgsql-17.0/data -l /usr/local/pgsql-17.0/logfile start
-
-# 4) 验证
-/usr/local/pgsql-17.0/bin/psql -U postgres -c "SELECT version();"
-
-# (可选) 加 PATH
-echo 'export PATH=/usr/local/pgsql-17.0/bin:$PATH' >> ~/.bashrc && source ~/.bashrc
-```
-
-> 关闭：`sudo -u postgres /usr/local/pgsql-17.0/bin/pg_ctl -D /usr/local/pgsql-17.0/data stop`
-
----
-
-## 🚀 方案 C：Docker（快速、可显式标签 17.0）
-
-> 需要 Docker（可用 Docker Desktop + WSL2 集成）。**精确 17.0** 时，直接用镜像标签。
-
-```bash
-docker rm -f pg170 2>/dev/null
-
-docker run -d --name pg170 \
-  -e POSTGRES_PASSWORD=postgres \
-  -p 5432:5432 \
-  -v $HOME/pg17-data:/var/lib/postgresql/data \
-  postgres:17.0
-
-
-
-# 验证
-docker exec -it pg170 psql -U postgres -c "SELECT version();"
-```
-
-> 如果拉取不到 `17.0` 标签，可用 `postgres:17`（拿到最新 17.x）。一定要锁定 17.0，可改用**镜像 digest**或找存档镜像。
-
----
-
-## WSL2 常见注意点
-
-* **systemd**：要用 `systemctl` 管服务，先在 `/etc/wsl.conf` 启用：
-
-  ```ini
-  [boot]
-  systemd=true
-  ```
-
-  然后在 PowerShell：`wsl --shutdown` 再进来。
-* **从 Windows 连接**：Win11 一般可直接 `localhost:5432`；若不行，查 WSL IP（`ip addr`）或确认 `listen_addresses` 与 `pg_hba.conf`。
-* **端口冲突**：若 5432 被占，改 `postgresql.conf` 里的 `port`，或停掉其他实例。
-* **代理环境**：在有代理时，`apt`/`wget`/`docker` 需要代理配置；TLS 证书请导入到 WSL（`update-ca-certificates`）。
-
----
-
-## 该用哪种？
-
-* **开发/生产建议**：方案 A（17.x 最新补丁，安全）
-* **必须严格 17.0**：方案 B（源码）或方案 C（Docker 指定标签）
-
-如果你告诉我当前发行版（`cat /etc/os-release`）和是否已启用 systemd，我可以把对应方案整理成**一键脚本**适配你的环境。
-
-
 *********************************************************************************************************************************************************
 # docker 引擎安装 
-
-你的报错：
-
-```
-docker: Cannot connect to the Docker daemon at unix:///var/run/docker.sock.
-Is the docker daemon running?
-```
-
-说明**WSL2 里没有在运行的 Docker 守护进程（dockerd）**，`docker` 只是客户端。要么用 **Docker Desktop（推荐）** 把引擎跑在 Windows 并对接 WSL，要么在 **WSL 发行版内安装原生 Docker Engine** 并启动它。二选一即可。
-
-
 
 ## 方案 B：在 WSL 里安装原生 Docker Engine（Ubuntu/Debian）
 
@@ -1471,6 +1061,7 @@ Processing triggers for man-db (2.8.3-2ubuntu0.1) ...
  create mode 120000 systemd/system/containerd.service
  create mode 120000 systemd/system/docker.service
  create mode 120000 systemd/system/docker.socket
+
 bill@leiyu-pc:~$ sudo apt update
 Get:1 http://security.ubuntu.com/ubuntu bionic-security InRelease [102 kB]
 Hit:2 http://archive.ubuntu.com/ubuntu bionic InRelease
@@ -1500,6 +1091,7 @@ Use 'sudo apt autoremove' to remove them.
 0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
 bill@leiyu-pc:~$ sudo install -m 0755 -d /etc/apt/keyrings
 bill@leiyu-pc:~$
+
 bill@leiyu-pc:~$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
  sudo gpg --dear>      sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 gpg: WARNING: unsafe ownership on homedir '/home/bill/.gnupg'
@@ -1524,6 +1116,7 @@ W: GPG error: http://ppa.launchpad.net/deadsnakes/ppa/ubuntu bionic InRelease: T
 E: The repository 'http://ppa.launchpad.net/deadsnakes/ppa/ubuntu bionic InRelease' is not signed.
 N: Updating from such a repository can't be done securely, and is therefore disabled by default.
 N: See apt-secure(8) manpage for repository creation and user configuration details.
+
 bill@leiyu-pc:~$ sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 Reading package lists... Done
 Building dependency tree
@@ -1606,6 +1199,7 @@ Processing triggers for ureadahead (0.100.0-21) ...
  delete mode 120000 systemd/system/containerd.service
  delete mode 120000 systemd/system/docker.service
  delete mode 120000 systemd/system/docker.socket
+
 bill@leiyu-pc:~$ sudo systemctl enable --now docker
 Synchronizing state of docker.service with SysV service script with /lib/systemd/systemd-sysv-install.
 Executing: /lib/systemd/systemd-sysv-install enable docker
@@ -2040,18 +1634,7 @@ Status: Downloaded newer image for postgres:17.0
 docker: Error response from daemon: driver failed programming external connectivity on endpoint pg170 (0db5bf733c8874212e89a47facea053fa35b0aaee80eede7aae2ac0314a3a5d8): Error starting userland proxy: listen tcp4 0.0.0.0:5432: bind: address already in use.
 bill@leiyu-pc:~$
 ```
-### 停止 或者终止postgresql10
-```
-bill@leiyu-pc:~$ sudo ss -ltnp | grep :5432
-LISTEN   0         224                127.0.0.1:5432            0.0.0.0:*        users:(("postgres",pid=401,fd=7))      
-bill@leiyu-pc:~$ sudo pg_lsclusters
-Ver Cluster Port Status Owner    Data directory              Log file
-10  main    5432 online postgres /var/lib/postgresql/10/main /var/log/postgresql/postgresql-10-main.log
-bill@leiyu-pc:~$
-bill@leiyu-pc:~$
-bill@leiyu-pc:~$ sudo pg_ctlcluster 10 main stop
-bill@leiyu-pc:~$ sudo sed -i 's/^auto/manual/' /etc/postgresql/10/main/start.conf
-bill@leiyu-pc:~$
+
 ```
 ### postpresql运行成功  by docker
 ```
@@ -2155,8 +1738,6 @@ docker run -d --name pg170 \
   postgres:17.0
 ```
 
-> 你命令里有一行误打的 `e POSTGRES_PASSWORD=postgres \`，下次去掉就行；真正生效的是后面的 `-e POSTGRES_PASSWORD=postgres`。
-
 ---
 
 ## 5) 备份 / 恢复（从宿主机直接做）
@@ -2170,7 +1751,7 @@ docker exec -i pg170 pg_restore -U postgres -d appdb < ~/appdb_2025-08-26.dump
 
 # 全库备份（含角色/库定义）
 docker exec pg170 pg_dumpall -U postgres > ~/pg_all_$(date +%F).sql
-```
+
 
 ---
 
@@ -2222,7 +1803,7 @@ docker run -d --name pg170 \
 
 
 
-*********************************************************************************************************************************************************
+# *********************************************************************************************************************************************************
 # postpresql17安装总结
 
 结合上面的过程，详细叙述一下wsl2下，docker操作postpresql17的安装、启动、检测、配置用户名/密码/库、状态检查，已经如何远程访问等。
@@ -2667,228 +2248,1540 @@ chmod +x pg17-restore.sh
 
 *********************************************************************************************************************************************************
 
+祝贺昨天首启成功！今天“正常启动”Odoo，**不要再用 `-i base`**（那是首次初始化用的，会重复安装基础模块）。按下面顺序来就行：
 
+## 每次启动步骤（最短闭环）
 
+1. **确保数据库容器在跑**
 
-
-*********************************************************************************************************************************************************
-
-
-
-
-
-*********************************************************************************************************************************************************
-
-
-
-
-
-*********************************************************************************************************************************************************
-
-
-
-
-# 安装 db postgresql
-```
-bill@leiyu-pc:~$ sudo apt update
-[sudo] password for bill:
-Hit:1 http://archive.ubuntu.com/ubuntu bionic InRelease
-Get:2 http://security.ubuntu.com/ubuntu bionic-security InRelease [102 kB]
-Get:3 http://archive.ubuntu.com/ubuntu bionic-updates InRelease [102 kB]
-Get:4 http://archive.ubuntu.com/ubuntu bionic-backports InRelease [102 kB]
-Fetched 305 kB in 14s (22.5 kB/s)
-Reading package lists... Done
-Building dependency tree
-Reading state information... Done
-16 packages can be upgraded. Run 'apt list --upgradable' to see them.
-
-bill@leiyu-pc:~$ sudo apt install postgresql
-Reading package lists... Done
-Building dependency tree
-Reading state information... Done
-The following additional packages will be installed:
-  libpq5 postgresql-10 postgresql-client-10 postgresql-client-common postgresql-common ssl-cert sysstat
-Suggested packages:
-  postgresql-doc locales-all postgresql-doc-10 libjson-perl openssl-blacklist isag
-The following NEW packages will be installed:
-  libpq5 postgresql postgresql-10 postgresql-client-10 postgresql-client-common postgresql-common ssl-cert sysstat
-0 upgraded, 8 newly installed, 0 to remove and 16 not upgraded.
-Need to get 5337 kB of archives.
-After this operation, 20.9 MB of additional disk space will be used.
-Do you want to continue? [Y/n] Y
-Get:1 http://archive.ubuntu.com/ubuntu bionic-updates/main amd64 libpq5 amd64 10.23-0ubuntu0.18.04.2 [107 kB]
-Get:2 http://archive.ubuntu.com/ubuntu bionic-updates/main amd64 postgresql-client-common all 190ubuntu0.1 [29.6 kB]
-Get:3 http://archive.ubuntu.com/ubuntu bionic-updates/main amd64 postgresql-client-10 amd64 10.23-0ubuntu0.18.04.2 [943 kB]
-Get:4 http://archive.ubuntu.com/ubuntu bionic/main amd64 ssl-cert all 1.0.39 [17.0 kB]
-Get:5 http://archive.ubuntu.com/ubuntu bionic-updates/main amd64 postgresql-common all 190ubuntu0.1 [157 kB]
-Get:6 http://archive.ubuntu.com/ubuntu bionic-updates/main amd64 postgresql-10 amd64 10.23-0ubuntu0.18.04.2 [3781 kB]
-Get:7 http://archive.ubuntu.com/ubuntu bionic-updates/main amd64 postgresql all 10+190ubuntu0.1 [5884 B]
-Get:8 http://archive.ubuntu.com/ubuntu bionic-updates/main amd64 sysstat amd64 11.6.1-1ubuntu0.2 [295 kB]
-Fetched 5337 kB in 23s (235 kB/s)
-Preconfiguring packages ...
-Selecting previously unselected package libpq5:amd64.
-(Reading database ... 50863 files and directories currently installed.)
-Preparing to unpack .../0-libpq5_10.23-0ubuntu0.18.04.2_amd64.deb ...
-Unpacking libpq5:amd64 (10.23-0ubuntu0.18.04.2) ...
-Selecting previously unselected package postgresql-client-common.
-Preparing to unpack .../1-postgresql-client-common_190ubuntu0.1_all.deb ...
-Unpacking postgresql-client-common (190ubuntu0.1) ...
-Selecting previously unselected package postgresql-client-10.
-Preparing to unpack .../2-postgresql-client-10_10.23-0ubuntu0.18.04.2_amd64.deb ...
-Unpacking postgresql-client-10 (10.23-0ubuntu0.18.04.2) ...
-Selecting previously unselected package ssl-cert.
-Preparing to unpack .../3-ssl-cert_1.0.39_all.deb ...
-Unpacking ssl-cert (1.0.39) ...
-Selecting previously unselected package postgresql-common.
-Preparing to unpack .../4-postgresql-common_190ubuntu0.1_all.deb ...
-Adding 'diversion of /usr/bin/pg_config to /usr/bin/pg_config.libpq-dev by postgresql-common'
-Unpacking postgresql-common (190ubuntu0.1) ...
-Selecting previously unselected package postgresql-10.
-Preparing to unpack .../5-postgresql-10_10.23-0ubuntu0.18.04.2_amd64.deb ...
-Unpacking postgresql-10 (10.23-0ubuntu0.18.04.2) ...
-Selecting previously unselected package postgresql.
-Preparing to unpack .../6-postgresql_10+190ubuntu0.1_all.deb ...
-Unpacking postgresql (10+190ubuntu0.1) ...
-Selecting previously unselected package sysstat.
-Preparing to unpack .../7-sysstat_11.6.1-1ubuntu0.2_amd64.deb ...
-Unpacking sysstat (11.6.1-1ubuntu0.2) ...
-Setting up sysstat (11.6.1-1ubuntu0.2) ...
-
-Creating config file /etc/default/sysstat with new version
-update-alternatives: using /usr/bin/sar.sysstat to provide /usr/bin/sar (sar) in auto mode
-Created symlink /etc/systemd/system/multi-user.target.wants/sysstat.service → /lib/systemd/system/sysstat.service.
-Setting up ssl-cert (1.0.39) ...
-Setting up libpq5:amd64 (10.23-0ubuntu0.18.04.2) ...
-Setting up postgresql-client-common (190ubuntu0.1) ...
-Setting up postgresql-common (190ubuntu0.1) ...
-Adding user postgres to group ssl-cert
-
-Creating config file /etc/postgresql-common/createcluster.conf with new version
-Building PostgreSQL dictionaries from installed myspell/hunspell packages...
-Removing obsolete dictionary files:
-Created symlink /etc/systemd/system/multi-user.target.wants/postgresql.service → /lib/systemd/system/postgresql.service.
-Setting up postgresql-client-10 (10.23-0ubuntu0.18.04.2) ...
-update-alternatives: using /usr/share/postgresql/10/man/man1/psql.1.gz to provide /usr/share/man/man1/psql.1.gz (psql.1.gz) in auto mode
-Setting up postgresql-10 (10.23-0ubuntu0.18.04.2) ...
-Creating new PostgreSQL cluster 10/main ...
-/usr/lib/postgresql/10/bin/initdb -D /var/lib/postgresql/10/main --auth-local peer --auth-host md5
-The files belonging to this database system will be owned by user "postgres".
-This user must also own the server process.
-
-The database cluster will be initialized with locale "C.UTF-8".
-The default database encoding has accordingly been set to "UTF8".
-The default text search configuration will be set to "english".
-
-Data page checksums are disabled.
-
-fixing permissions on existing directory /var/lib/postgresql/10/main ... ok
-creating subdirectories ... ok
-selecting default max_connections ... 100
-selecting default shared_buffers ... 128MB
-selecting default timezone ... Asia/Shanghai
-selecting dynamic shared memory implementation ... posix
-creating configuration files ... ok
-running bootstrap script ... ok
-performing post-bootstrap initialization ... ok
-syncing data to disk ... ok
-
-Success. You can now start the database server using:
-
-    /usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main -l logfile start
-
-Ver Cluster Port Status Owner    Data directory              Log file
-10  main    5432 down   postgres /var/lib/postgresql/10/main /var/log/postgresql/postgresql-10-main.log
-update-alternatives: using /usr/share/postgresql/10/man/man1/postmaster.1.gz to provide /usr/share/man/man1/postmaster.1.gz (postmaster.1.gz) in auto mode
-Setting up postgresql (10+190ubuntu0.1) ...
-Processing triggers for man-db (2.8.3-2ubuntu0.1) ...
-Processing triggers for ureadahead (0.100.0-21) ...
-Processing triggers for libc-bin (2.27-3ubuntu1.6) ...
-Processing triggers for systemd (237-3ubuntu10.57) ...
-bill@leiyu-pc:~$
-
-```
-*********************************************************************************************************************************************************
-
-PostgreSQL 不允许 **root** 启动，也不能让一个普通用户去写 **postgres** 的数据目录。  
-正确做法：用 **postgres** 系统用户启动/管理实例。
-
-1. 切到 postgres 用户  
-   ```bash
-   sudo -iu postgres
-   ```
-
-2. 启动（或注册成服务）  
-   ```bash
-   # 启动这一次
-   /usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main -l /tmp/pg.log start
-
-   # 查看状态
-   /usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main status
-   ```
-
-3. 或者直接用 **systemd 服务**（推荐，WSL2 里也能用）  
-   ```bash
-   exit                       # 先回到 bill
-   sudo systemctl start postgresql@10-main   # 立即启动
-   sudo systemctl enable postgresql@10-main  # 开机自启
-   ```
-
-4. 验证  
-   ```bash
-   sudo -iu postgres psql -c "SELECT version();"
-   # 能连进去就说明启动成功
-   ```
-
-问题根源  
-- 你第一次用 `bill` 用户，没权限写 `/var/lib/postgresql/10/main/postmaster.pid` → “Permission denied”。  
-- 第二次用 `sudo` 直接 root，PostgreSQL 拒绝 root 运行 → “cannot be run as root”。  
-
-按上面的 **sudo -iu postgres** 或 **systemctl** 方式即可解决。
-
-```
-postgres@leiyu-pc:~$ # 启动这一次
-in/pg_ctl -D /vapostgres@leiyu-pc:~$ /usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main -l /tmp/pg.log start
-/pg_ctl -D /var/lib/postgresql/10/main statuspg_ctl: another server might be running; trying to start server anyway
-waiting for server to start.... stopped waiting
-pg_ctl: could not start server
-Examine the log output.
-postgres@leiyu-pc:~$
-postgres@leiyu-pc:~$ # 查看状态
-postgres@leiyu-pc:~$ /usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main status
-pg_ctl: server is running (PID: 15003)
-/usr/lib/postgresql/10/bin/postgres "-D" "/var/lib/postgresql/10/main" "-c" "config_file=/etc/postgresql/10/main/postgresql.conf"
-postgres@leiyu-pc:~$
-
-postgres@leiyu-pc:~$
-postgres@leiyu-pc:~$ psql -c "SELECT version();"
-                                                               version
---------------------------------------------------------------------------------------------------------------------------------------
- PostgreSQL 10.23 (Ubuntu 10.23-0ubuntu0.18.04.2) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0, 64-bit
-(1 row)
-
-postgres@leiyu-pc:~$
-
+```bash
+# 看看是否已在运行
+docker ps -a --filter name=pg170
+# 未运行就启动
+docker start pg170
+# 快速连通性自测（可选）
+PGPASSWORD=proot psql -h 127.0.0.1 -p 5432 -U proot -d odoo -c "select 1;"
 ```
 
-如何在wsl2下安装PostgreSQL版本为17.0 
+> 建议用 `127.0.0.1:5432` 连接你映射出来的端口，**别用** `172.17.x.x`（容器内网 IP 可能变）。
+
+2. **进入项目并激活 venv**
+
+```bash
+cd /d/_projects/odoo.github.rainth888
+source .venv/bin/activate
+```
+
+3. **启动 Odoo（正常运行）**
+
+```bash
+python odoo-bin \
+  --addons-path=addons,odoo/addons \
+  -d odoo \
+  --db_host=127.0.0.1 --db_port=5432 \
+  --db_user=proot --db_password=proot
+```
+
+然后浏览器打开：`http://localhost:8069`
+
+---
+
+## 推荐：用配置文件更省心
+
+在项目根目录新建 `odoo.conf`：
+
+```ini
+[options]
+addons_path = addons,odoo/addons
+db_host = 127.0.0.1
+db_port = 5432
+db_user = proot
+db_password = proot
+db_name = odoo
+logfile = /tmp/odoo.log
+; http_port = 8069
+```
+
+以后只需：
+
+```bash
+python odoo-bin -c odoo.conf
+```
+
+---
+
+## 常见操作小抄
+
+* **更新某个模块**（而非全新安装 base）：
+
+  ```bash
+  python odoo-bin -c odoo.conf -u <module_name>
+  ```
+* **查看 Odoo 是否读到了两个 addons 路径**：启动日志里会打印 `addons_path=...`
+* **容器 IP 变导致连不上**：把 `db_host` 固定为 `127.0.0.1`（你已做了端口映射 `-p 5432:5432`），或把 Odoo 也放进 Docker 与 Postgres 同一自定义网络后用服务名直连。
+
+需要的话，我可以把你当前参数写成一个“一键启动脚本”，双击/执行就能起 Odoo。
+
 
 
 
 *********************************************************************************************************************************************************
 
-结论先行：**WinSCP 不能用来发起 TFTP 连接**。  
-WinSCP 目前只支持 **SFTP、SCP、FTP(S)、WebDAV、Amazon S3** 等协议，在官方文档和界面里都没有 TFTP 选项。  
-如果你的场景必须走 TFTP，请改用下列工具：
+在 Ubuntu 环境下，有几种方法可以在后台运行 Odoo 服务。我来为你介绍几种推荐的方法：
 
-- **Tftpd64** / **3CDaemon**（Windows 图形界面，可做 TFTP 客户端/服务器）  
-- **Windows 自带命令行 TFTP 客户端**（需勾选“启用或关闭 Windows 功能 → TFTP Client”）  
-- **Linux/WSL 命令行**：`sudo apt install tftp-hpa` 后执行 `tftp <host>` 即可
+**方法1：使用 nohup（简单快速）**
+```bash
+# 在后台运行并将输出重定向到日志文件
+nohup python odoo-bin -c odoo.conf > odoo.log 2>&1 &
 
-一句话：想用图形界面传文件 → 继续用 WinSCP 的 SFTP/SCP；**必须 TFTP → 换 Tftpd64 或命令行 tftp**。
+# 查看进程
+ps aux | grep odoo
+
+# 查看日志
+tail -f odoo.log
+```
+
+**方法2：使用 screen（推荐，可以重新连接）**
+```bash
+# 安装 screen（如果没有安装）
+sudo apt install screen
+
+# 创建新的 screen 会话
+screen -S odoo
+
+# 在 screen 中运行 Odoo
+python odoo-bin -c odoo.conf
+
+# 按 Ctrl+A 然后按 D 来分离会话
+
+# 重新连接到会话
+screen -r odoo
+
+# 查看所有会话
+screen -ls
+```
+
+**方法3：使用 tmux（更现代的终端复用器）**
+```bash
+# 安装 tmux
+sudo apt install tmux
+
+# 创建新的 tmux 会话
+tmux new-session -d -s odoo
+
+# 在 tmux 中运行 Odoo
+tmux send-keys -t odoo "python odoo-bin -c odoo.conf" Enter
+
+# 分离会话
+tmux detach -s odoo
+
+# 重新连接
+tmux attach -t odoo
+
+# 查看会话
+tmux list-sessions
+```
+
+**方法4：创建系统服务（最专业，推荐生产环境）**
+```bash
+# 创建服务文件
+sudo nano /etc/systemd/system/odoo.service
+```
+
+在文件中添加以下内容：
+```ini
+[Unit]
+Description=Odoo
+After=network.target
+
+[Service]
+Type=simple
+User=bill
+Group=bill
+WorkingDirectory=/mnt/d/_projects/odoo.github.rainth888
+ExecStart=/mnt/d/_projects/odoo.github.rainth888/.venv/bin/python /mnt/d/_projects/odoo.github.rainth888/odoo-bin -c /mnt/d/_projects/odoo.github.rainth888/odoo.conf
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+然后启用和启动服务：
+```bash
+# 重新加载 systemd
+sudo systemctl daemon-reload
+
+# 启用服务（开机自启）
+sudo systemctl enable odoo
+
+# 启动服务
+sudo systemctl start odoo
+
+# 查看状态
+sudo systemctl status odoo
+
+# 查看日志
+sudo journalctl -u odoo -f
+
+# 停止服务
+sudo systemctl stop odoo
+```
+
+**方法5：使用 supervisor（进程管理工具）**
+```bash
+# 安装 supervisor
+sudo apt install supervisor
+
+# 创建配置文件
+sudo nano /etc/supervisor/conf.d/odoo.conf
+```
+
+配置文件内容：
+```ini
+[program:odoo]
+command=/mnt/d/_projects/odoo.github.rainth888/.venv/bin/python /mnt/d/_projects/odoo.github.rainth888/odoo-bin -c /mnt/d/_projects/odoo.github.rainth888/odoo.conf
+directory=/mnt/d/_projects/odoo.github.rainth888
+user=bill
+autostart=true
+autorestart=true
+redirect_stderr=true
+stdout_logfile=/var/log/odoo/odoo.log
+```
+
+然后：
+```bash
+# 创建日志目录
+sudo mkdir -p /var/log/odoo
+sudo chown bill:bill /var/log/odoo
+
+# 重新加载配置
+sudo supervisorctl reread
+sudo supervisorctl update
+
+# 启动服务
+sudo supervisorctl start odoo
+
+# 查看状态
+sudo supervisorctl status odoo
+```
+
+**推荐使用顺序：**
+1. **开发测试：** 使用 `nohup` 或 `screen`
+2. **个人使用：** 使用 `tmux`
+3. **生产环境：** 使用 `systemd` 服务
+
+对于你当前的情况，我推荐使用 **方法1（nohup）** 或 **方法2（screen）**，它们简单易用且不需要额外配置。
+
+你想使用哪种方法？我可以提供更详细的步骤说明。
+
+
+
+*********************************************************************************************************************************************************
+# ubuntu20:
+**方法4：创建系统服务（最专业，推荐生产环境）**
+```bash
+# 创建服务文件
+sudo nano /etc/systemd/system/odoo.service
+```
+
+在文件中添加以下内容：
+```ini
+[Unit]
+Description=Odoo
+After=network.target
+
+[Service]
+Type=simple
+User=bill
+Group=bill
+WorkingDirectory=/data/odoo.github.rainth888
+ExecStart=/data/odoo.github.rainth888/.venv/bin/python /data/odoo.github.rainth888/odoo-bin -c /data/odoo.github.rainth888/odoo.conf
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+然后启用和启动服务：
+```bash
+# 重新加载 systemd
+sudo systemctl daemon-reload
+
+# 启用服务（开机自启）
+sudo systemctl enable odoo
+
+# 启动服务
+sudo systemctl start odoo
+
+# 查看状态
+sudo systemctl status odoo
+
+# 查看日志
+sudo journalctl -u odoo -f
+
+# 停止服务
+sudo systemctl stop odoo
+```
+
+
+
+*********************************************************************************************************************************************************
+从错误信息来看，主要有两个问题需要解决：
+
+### 1. **Odoo 使用 root 用户运行的问题**
+
+> `Running as user 'root' is a security risk.`
+
+这是一个警告，建议你不要以 `root` 用户启动 Odoo，因为这会存在安全隐患。你应该用一个非 `root` 用户来运行 Odoo，通常是 `odoo` 或 `bill` 用户。
+
+#### 解决方案：
+
+1. 创建一个新的用户（如果还没有的话）：
+
+   ```bash
+   sudo useradd -m odoo
+   sudo usermod -aG sudo odoo
+   ```
+2. 修改文件夹权限，确保 Odoo 进程可以访问相关目录：
+
+   ```bash
+   sudo chown -R odoo:odoo /data/odoo.github.rainth888
+   ```
+3. 切换到 `odoo` 用户：
+
+   ```bash
+   sudo su - odoo
+   ```
+4. 以 `odoo` 用户运行 Odoo：
+
+   ```bash
+   python odoo-bin --addons-path=addons,odoo/addons -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot
+   ```
+
+### 2. **端口冲突：OSError: \[Errno 98] Address already in use**
+
+> `OSError: [Errno 98] Address already in use`
+
+这个错误表明 Odoo 启动时，绑定的端口（默认是 8069）已经被其他进程占用了。你可以使用以下命令来检查端口是否被占用，并杀掉相关进程。
+
+#### 解决方案：
+
+1. **检查 8069 端口占用**：
+
+   ```bash
+   sudo lsof -i :8069
+   ```
+
+   或者：
+
+   ```bash
+   sudo netstat -tuln | grep 8069
+   ```
+
+2. **杀掉占用该端口的进程**：
+   如果找到了占用该端口的进程，记下 PID，并执行以下命令来终止它：
+
+   ```bash
+   sudo kill -9 <PID>
+   ```
+
+3. **更改 Odoo 使用的端口（如果需要）**：
+   如果你希望避免端口冲突，可以更改 Odoo 使用的端口（如 8070）：
+
+   ```bash
+   python odoo-bin --addons-path=addons,odoo/addons -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot --http-port=8070
+   ```
+
+4. **确认没有其他进程占用该端口**：
+   再次执行 `sudo lsof -i :8069` 或 `sudo netstat -tuln | grep 8069`，确保端口没有被占用。
+
+---
+
+### 总结
+
+* **运行 Odoo 时避免使用 `root` 用户**，可以创建一个新的用户并使用它来运行。
+* **解决端口占用问题**，通过查看占用端口的进程并终止，或者更改 Odoo 的运行端口。
+
+
+
+
+*********************************************************************************************************************************************************
+### 修改 Odoo 和 PostgreSQL 默认用户密码的步骤
+
+#### 1. 修改 Odoo 的管理员密码
+
+Odoo 的管理员密码（`admin_passwd`）存储在配置文件 `odoo.conf` 中，你可以直接在配置文件中修改这个密码，或者通过数据库进行更改。
+
+##### 1.1 修改 `odoo.conf` 中的 `admin_passwd`（直接修改配置文件）
+
+1. 找到并编辑你的 Odoo 配置文件（`odoo.conf`）。通常，它位于 Odoo 项目的根目录，或者 Docker 容器中挂载的目录。
+
+   使用 `nano` 或 `vim` 编辑配置文件：
+
+   ```bash
+   nano /path/to/your/odoo.conf
+   ```
+
+2. 找到 `admin_passwd` 字段，修改为你想要的密码：
+
+   ```ini
+   admin_passwd = new_password_here
+   ```
+
+3. 保存文件并退出编辑器。
+
+##### 1.2 使用 SQL 更改 Odoo 的管理员密码
+
+1. 通过 Docker 容器进入 PostgreSQL 数据库：
+
+   ```bash
+   docker exec -it pg170 psql -U proot -d odoo
+   ```
+
+2. 执行以下 SQL 查询来更新管理员密码。替换 `new_password_here` 为你想设置的密码：
+
+   ```sql
+   UPDATE res_users SET password = 'new_password_here' WHERE login = 'admin';
+   
+   UPDATE res_users SET password = 'Qd#969kyghb!k&chFdv5axsuH+wq7' WHERE login = 'admin';
+   ```
+
+3. 退出 PostgreSQL：
+
+   ```sql
+   \q
+   ```
+
+#### 2. 修改 PostgreSQL 用户（`proot`）的密码
+
+1. 进入 PostgreSQL 容器并使用管理员权限登录：
+
+   ```bash
+   docker exec -it pg170 psql -U proot
+   ```
+
+2. 修改 `proot` 用户的密码（替换 `new_password_here` 为你想要的密码）：
+
+   ```sql
+   ALTER USER proot WITH PASSWORD 'new_password_here';
+   
+   ALTER USER proot WITH PASSWORD 'Qd#969kyghb!k&chFdv5axsuH+wq7';
+   ```
+
+3. 确保数据库配置文件中的新密码与所设置的密码一致。更新 Odoo 配置文件 `odoo.conf` 中的 `db_password`：
+
+   ```ini
+   db_password = new_password_here
+   ```
+
+4. 退出 PostgreSQL：
+
+   ```sql
+   \q
+   ```
+
+#### 3. 确保数据库和 Odoo 配置文件同步
+
+确保在 `odoo.conf` 配置文件中，`db_password` 字段和 PostgreSQL 中的 `proot` 用户密码一致：
+
+```ini
+db_host = 127.0.0.1
+db_port = 5432
+db_user = proot
+db_password = new_password_here  # 修改为新密码
+```
+
+#### 4. 重启 Odoo 服务
+
+修改完密码后，需要重启 Odoo 服务，使配置生效。
+
+如果你在 Docker 中运行 Odoo：
+
+```bash
+docker restart pg170   # 重启 PostgreSQL 容器（如果有更改数据库设置）
+docker restart odoo_app # 重启 Odoo 容器
+```
+
+或者，如果你直接在服务器上运行 Odoo：
+
+```bash
+sudo systemctl restart odoo
+```
+
+#### 5. 检查 Odoo 是否正常连接 PostgreSQL
+
+访问 Odoo UI，尝试登录并检查是否能够使用新的密码访问系统。你可以访问 Odoo 的 `http://localhost:8069` 或对应的公网地址，确保数据库连接和管理员密码都正确。
+
+---
+
+### 总结：
+
+* **修改 Odoo 管理员密码**：直接修改 `odoo.conf` 或使用 SQL 更新数据库中的管理员密码。
+* **修改 PostgreSQL 用户密码**：通过 SQL 命令修改 `proot` 用户密码，并确保 `odoo.conf` 中同步更新。
+* **重启 Odoo 和 PostgreSQL** 服务，确保更改生效。
+
+
+
+*********************************************************************************************************************************************************
+# unbuntu20下的odoo系统，设置为systemctl自动启动，数据库是docker自动启动，现在发现odoo服务启动时，数据库系统还没有启动起来，
+你说的是“开机自启时 Odoo 抢先启动，而 Docker 里的 Postgres 还没 ready，导致 Odoo 启动失败”。用 **systemd 的 ExecStartPre 等待 DB 就绪** 是最稳的做法。给你三套可选方案，首推方案 A。
+
+---
+
+## 方案 A：在 odoo.service 里用 `pg_isready` 等待端口就绪（推荐）
+
+1. 在宿主机装客户端检测工具：
+
+```bash
+sudo apt-get update
+sudo apt-get install -y postgresql-client
+```
+
+2. 修改 `/etc/systemd/system/odoo.service`（关键是 `After/Wants` + `ExecStartPre`）：
+
+```ini
+[Unit]
+Description=Odoo
+After=network-online.target docker.service
+Wants=network-online.target docker.service
+
+[Service]
+Type=simple
+User=bill
+Group=bill
+WorkingDirectory=/data/odoo.github.rainth888
+
+# 按你实际路径写
+ExecStart=/data/odoo.github.rainth888/.venv/bin/python /data/odoo.github.rainth888/odoo-bin -c /data/odoo.github.rainth888/odoo.conf
+
+# —— 等待数据库就绪（最多 60 秒）——
+Environment="DB_HOST=127.0.0.1" "DB_PORT=5432"
+ExecStartPre=/bin/sh -c 'for i in $(seq 1 60); do \
+  /usr/bin/pg_isready -h ${DB_HOST} -p ${DB_PORT} >/dev/null 2>&1 && exit 0; \
+  echo "[wait-db] postgres not ready, retry $i/60"; sleep 1; done; exit 1'
+
+# 可选：顺手把容器启动起来（若用 docker 重启策略也可省略）
+ExecStartPre=/usr/bin/docker start pg170 >/dev/null 2>&1 || true
+
+Restart=always
+RestartSec=5
+TimeoutStartSec=70   # 给等待脚本一些时间
+
+[Install]
+WantedBy=multi-user.target
+```
+
+3. 使配置生效并测试：
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart odoo
+sudo systemctl status odoo -n 50
+```
+
+> 说明
+>
+> * `After=… docker.service` 只保证 **Docker 守护进程**已起，不代表容器就绪；真正的“ready”靠 `ExecStartPre` 的 `pg_isready` 来兜底。
+> * `DB_HOST=127.0.0.1` 前提是你把容器 5432 映射到宿主 5432（`-p 5432:5432`）。如果你用了别的端口，改成对应端口。
+> * `pg_isready` 只测“是否接受连接”，**无需用户/密码**，非常适合做 readiness。
+
+---
+
+## 方案 B：不想装 `pg_isready`？用 `nc`/`bash` 端口探测
+
+把 `ExecStartPre` 换成下面任一条（先装 `netcat`）：
+
+```bash
+sudo apt-get install -y netcat
+```
+
+**版本 1（nc）：**
+
+```ini
+ExecStartPre=/bin/sh -c 'for i in $(seq 1 60); do \
+  nc -z 127.0.0.1 5432 && exit 0; \
+  echo "[wait-db] port closed, retry $i/60"; sleep 1; done; exit 1'
+```
+
+**版本 2（/dev/tcp）：**
+
+```ini
+ExecStartPre=/bin/sh -c 'for i in $(seq 1 60); do \
+  (echo > /dev/tcp/127.0.0.1/5432) >/dev/null 2>&1 && exit 0; \
+  echo "[wait-db] port closed, retry $i/60"; sleep 1; done; exit 1'
+```
+
+---
+
+## 方案 C：把 DB 与 Odoo 都用 docker-compose 管（健康检查 + 依赖）
+
+如果你愿意把 Odoo 也容器化，`docker compose` 的 **healthcheck + depends\_on: condition: service\_healthy** 能天然保证启动顺序。例如：
+
+```yaml
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: proot
+      POSTGRES_PASSWORD: proot
+      POSTGRES_DB: odoo
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U proot -d odoo"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+
+  odoo:
+    image: odoo:18
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8069:8069"
+    volumes:
+      - ./odoo.conf:/etc/odoo/odoo.conf
+      - ./addons:/mnt/extra-addons
+```
+
+开机自启可用一个 systemd 单元去执行 `docker compose up -d`，就不需要自己写 `ExecStartPre` 轮询了。
+
+---
+
+## 其他加固建议
+
+* **Odoo 连接 DB 时用 127.0.0.1/固定端口**（避免使用 `172.17.x.x` 这类 Docker 内网 IP，会变化）。
+* **Postgres 容器加重启策略**：`--restart unless-stopped`（或 compose 里 `restart: unless-stopped`）。
+* **Odoo 服务 `Restart=always`**：即使 DB 短时重启，Odoo 也能自动拉起。
+* **权限/用户**：避免用 `root` 跑 Odoo，`User=bill` 并确保目录归属 `bill:bill`。
+* **日志定位**：`journalctl -u odoo -b -n 100 -f` 看 Odoo；`docker logs -f pg170` 看 DB 容器。
+
+---
+
+按方案 A 改完，你再重启机器（或模拟 DB 慢起）测试一遍：
+
+1. `sudo systemctl stop odoo`
+2. `docker stop pg170 && sleep 3 && docker start pg170`
+3. `sudo systemctl start odoo`
+   看 `status`/日志里会打印 “\[wait-db] … retry …”，直到 “accepting connections” 再正式启动 Odoo。
+
+
+
+# *********************************************************************************************************************************************************
+
+一次性指令（同时留下“监控脚本”，第二天可复查）
+
+1. 停掉旧进程  
+```bash
+pkill -f odoo-bin
+```
+
+2. 立即建一个「监控脚本」记录数据库列表  
+```bash
+cat > /data/odoo-watch.sh <<'EOF'
+#!/bin/bash
+ts=$(date '+%F %T')
+echo "[$ts] Database list:" >> /data/pg-watch.log
+docker exec -it pg170 psql -U proot -c '\l' >> /data/pg-watch.log
+EOF
+chmod +x /data/odoo-watch.sh
+```
+```bash
+cat > odoo-watch.sh <<'EOF'
+#!/bin/bash
+PG_PASS='Qd#969kyghb!k&chFdv5axsuH+wq7'
+ts=$(date '+%F %T')
+echo "[$ts] Database list:" >> pg-watch.log
+docker exec -e PGPASSWORD="$PG_PASS" pg170 \
+  psql -h 127.0.0.1 -U proot -d odoo -c '\l' >> pg-watch.log 2>&1
+EOF
+chmod +x odoo-watch.sh
+```
+
+3. **初始化**（带 `--stop-after-init` 让它跑完自动停，方便你检查）  
+```bash
+cd /data/odoo.github.rainth888
+python odoo-bin \
+  --addons-path=addons \
+  -d odoo \
+  --db_host=127.0.0.1 \
+  --db_port=5432 \
+  --db_user=proot \
+  --db_password='Q*************H+wq7' \
+  -i base \
+  --stop-after-init
+```
+
+4. 初始化完成 **立即** 看库  
+```bash
+/data/odoo-watch.sh        # 第一次记录
+docker exec -it pg170 psql -U proot -c '\l'
+```
+
+5. 正常启动（以后用）  
+```bash
+python odoo-bin \
+  --addons-path=addons \
+  -d odoo \
+  --db_host=127.0.0.1 --db_port=5432 \
+  --db_user=proot --db_password='Q*************H+wq7'
+```
+
+6. 隔夜检查  
+```bash
+/data/odoo-watch.sh        # 第二次记录
+diff /data/pg-watch.log    # 对比两天库列表
+```
+
+只要 `/data/pg17-data` 目录不被删除或重新 `docker run` 了同名容器，库就不会消失；日志对比即可一眼看出问题。
+
+# *********************************************************************************************************************************************************
+
+好的，你的想法是对的：如果已经没有历史数据可恢复，那就直接用 Odoo 重新初始化一个数据库。但这一次一定要保证数据库不会再“神秘消失”。我给你分三步来操作：
+
+---
+
+## 一、重新初始化 Odoo 数据库
+
+进入 Odoo 代码目录后执行（假设容器里 PostgreSQL 正常运行，用户 `proot` 存在）：
+
+```bash
+python3 odoo-bin \
+  --addons-path=addons \
+  -d odoo \
+  --db_host=127.0.0.1 \
+  --db_port=5432 \
+  --db_user=proot \
+  --db_password='你的密码' \
+  -i base
+```
+
+* `-d odoo` 表示数据库名叫 `odoo`，如果不存在会创建。
+* `-i base` 会安装最基础的 Odoo 模块。
+* 成功后，你用浏览器访问 Odoo 就能进入初始化好的系统。
+
+---
+
+## 二、防止再次丢库的关键措施
+
+你的环境里最危险的点是：**Postgres 5432 端口对公网开放**。如果不收口，即使这次重新初始化成功，也可能再次被 DROP。解决办法：
+
+1. **收口端口**
+
+   * 最好改为仅监听本地：
+
+     ```yaml
+     # docker-compose.yml 示例
+     ports:
+       - "127.0.0.1:5432:5432"
+     ```
+   * 或者用防火墙限制，只允许内网/跳板机：
+
+     ```bash
+     sudo ufw allow from <内网IP段> to any port 5432 proto tcp
+     sudo ufw deny 5432/tcp
+     ```
+
+2. **限制用户权限**
+
+   * 不要用超级用户（`proot` 带 SUPERUSER 权限风险大）。
+   * 创建一个专门给 Odoo 用的数据库用户，只赋予该数据库的权限：
+
+     ```sql
+     CREATE USER odoo_user WITH PASSWORD '安全密码';
+     CREATE DATABASE odoo OWNER odoo_user;
+     GRANT ALL PRIVILEGES ON DATABASE odoo TO odoo_user;
+     ```
+   * 然后 Odoo 连接用 `odoo_user` 而不是 `proot`。
+
+3. **配置 PostgreSQL 访问规则**（容器内 `/var/lib/postgresql/data/pg_hba.conf`）
+   只允许本地/指定 IP 连接，并且用安全认证：
+
+   ```conf
+   host    odoo    odoo_user    127.0.0.1/32     scram-sha-256
+   host    all     all          0.0.0.0/0        reject
+   ```
+
+4. **启用日志与审计**
+   在 `postgresql.conf` 打开：
+
+   ```conf
+   logging_collector = on
+   log_statement = 'ddl'
+   ```
+
+   这样以后谁执行了 `DROP`/`CREATE` 都能追踪。
+
+5. **备份机制**
+   加个每日备份脚本，至少保证就算被删库也能恢复：
+
+   ```bash
+   pg_dump -h 127.0.0.1 -U odoo_user -d odoo -F c -f /data/pg-backup/odoo_$(date +%F).dump
+   ```
+
+---
+
+## 三、观察验证是否还会“消失”
+
+1. 先执行初始化，把 Odoo 用起来。
+2. 观察 `/data/pg17-data` 的体量（用 `du -sh`），随着 Odoo 创建表会变大。
+3. 第二天如果发现“库没了”，就立刻查 **容器日志** 和 **Postgres 日志**，判断是 DROP 还是 initdb。
+4. 如果以上防护措施到位，基本不可能再出现无故消失的情况。
+
+---
+
+👉 建议：你这次初始化时，用一个\*\*新建的业务用户（非 superuser）\*\*来给 Odoo 连接，这样即使外部有人扫到密码，也没法 DROP 掉整个库。
+
+要不要我帮你写一个 **完整的 docker-compose.yml 示例**（包含 Postgres + Odoo，带内网网络、用户权限配置、持久化挂载、端口收口），你可以直接替换使用？
+
+
+
+# *********************************************************************************************************************************************************
+
+# 安装wkhtmltopdf
+
+这是 Odoo 在找不到 **wkhtmltopdf / wkhtmltoimage** 可执行文件时报的标准提示。要生成 PDF/图片报表，你需要在**运行 Odoo 的这台机器**上安装 wkhtmltopdf（与数据库是否在 Docker 无关）。
+
+下面给你一套在 **Ubuntu 20.04（Focal）** 上的靠谱做法，并附上常见坑位检查。
+
+---
+
+## 一步到位安装（Ubuntu 20.04）
+
+### 方式 A：安装官方静态包（包含 wkhtmltopdf + wkhtmltoimage，带 patched Qt，最稳）
+
+> 静态包无需 X 服务器，适合服务器/WSL/容器内使用。
+
+```bash
+# 先清掉可能的旧 apt 版本（可选）
+sudo apt-get remove -y wkhtmltopdf || true
+
+sudo apt-get update
+# 一些字体/渲染依赖（有些包可能已内置，但装上更保险）
+sudo apt-get install -y fontconfig libxrender1 libxext6 xfonts-base xfonts-75dpi
+
+# 到 wkhtmltopdf Releases 下载 Ubuntu 20.04 对应的 .deb（名称通常含 “focal_amd64.deb”）
+# 例：wkhtmltox_0.12.6-1.focal_amd64.deb
+# 假设已下载到 /tmp/wk.deb
+sudo apt-get install -y /tmp/wk.deb
+# 或者：sudo dpkg -i /tmp/wk.deb && sudo apt-get -f install -y
+```
+
+> 注：我不能直接给你外链，去官方 GitHub Releases 选 **focal\_amd64** 的 `.deb` 即可（0.12.5 或 0.12.6 均可；Odoo 16/17/18 通常 0.12.6 更合适）。
+
+### 方式 B：用 apt 直接装（更省事，但个别功能/字体兼容不如静态包）
+
+```bash
+sudo apt-get update
+sudo apt-get install -y wkhtmltopdf
+```
+
+---
+
+## 验证安装是否成功
+
+```bash
+wkhtmltopdf --version
+wkhtmltoimage --version
+which wkhtmltopdf    # 看路径，一般是 /usr/local/bin 或 /usr/bin
+```
+
+安装结果：
+```
+root@yisu-ubuntu20:~# wkhtmltopdf --version
+wkhtmltopdf 0.12.5
+root@yisu-ubuntu20:~# wkhtmltoimage --version
+wkhtmltoimage 0.12.5
+root@yisu-ubuntu20:~# which wkhtmltopdf
+/usr/bin/wkhtmltopdf
+root@yisu-ubuntu20:~#
+
+```
+
+如果命令可用，重启 Odoo 即可；日志里关于 wkhtmltopdf 的提示会消失。
+
+---
+
+## 告诉 Odoo 可执行文件的路径（可选）
+
+通常 Odoo 会从 `PATH` 里自动找到；若仍提示缺失，可在 **odoo.conf** 里加一行指向实际路径：
+
+```ini
+[options]
+wkhtmltopdf = /usr/local/bin/wkhtmltopdf   ; 或 /usr/bin/wkhtmltopdf
+```
+
+改完重启 Odoo：
+
+```bash
+sudo systemctl restart odoo   # 如果你用 systemd 管理
+# 或者手工重启你现在的进程
+```
+
+---
+
+## 报表打不开 / 空白 的常见原因与修复
+
+1. **服务内回环访问失败**（wkhtmltopdf 渲染时需要回连 Odoo 拉静态资源）
+
+   * 在 Odoo 系统参数里设置：
+
+     * `web.base.url`：对外访问的完整 URL（例如 `http://103.100.211.232:8069`，若有反代/HTTPS则写 `https://your.domain`）。
+     * `report.url`：wkhtmltopdf 渲染时**用于回连**的内部地址（如果 Odoo 在同机，常设为 `http://127.0.0.1:8069`）。
+   * 位置：设置 → 技术 → 参数 → 系统参数。
+
+2. **中文/特殊字体缺失** → PDF 乱码/方块
+   安装常用中文字体：
+
+   ```bash
+   sudo apt-get install -y fonts-noto-cjk fonts-noto fonts-dejavu ttf-wqy-zenhei
+   ```
+
+   安装后重启 Odoo，再试导出。
+
+3. **防火墙/SELinux/容器网络**
+
+   * 确保 Odoo 进程所在环境能访问到 `report.url`。
+   * 如果 Odoo 在容器里，`report.url` 推荐指向容器可达的地址（如 `http://odoo:8069` 或宿主 127.0.0.1:映射端口，按你的网络拓扑设）。
+
+4. **运行在 WSL**
+
+   * 也要在 **WSL Linux 环境内** 安装 wkhtmltopdf（不是在 Windows）。
+   * 路径、可执行权限、字体同上。
+
+---
+
+## 最后小抄
+
+* 安装成功却仍报缺失 → 指定 `wkhtmltopdf` 路径到 `odoo.conf`。
+* 报表空白/资源 404 → 设好 `report.url` 和 `web.base.url`，并保证回环可达。
+* 中文不显示 → 安装 `fonts-noto-cjk` / `wqy`。
+* Docker 化部署 → 把 wkhtmltopdf 安装写进 Dockerfile（`wkhtmltox` 静态包最佳），或单独提供一个包含它的镜像层。
+
+如果你把当前 **`wkhtmltopdf --version` 输出**、**`which wkhtmltopdf` 路径**、以及你的 **`odoo.conf`** 贴出来，我可以帮你检查是否已经就绪，并给出针对你环境的一条龙修正。
+
+这是 Odoo 在 **WSL2** 里最常见的“**看得见可执行文件，却报找不到**”的坑：  
+Odoo 跑在 **Windows 浏览器** 里，但 wkhtmltopdf 装在 **Linux 子系统**，两边不在同一“世界”。  
+解决思路：**让 Odoo 调用的其实是 Windows 版的 wkhtmltopdf**。
+
+------------------------------------------------
+一步到位的做法（推荐）
+
+1. 在 **Windows 11** 里再装一份  
+   下载 64-bit EXE（https://wkhtmltopdf.org/downloads.html）。  
+   安装到默认路径 `C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe`。
+
+2. 启动 Odoo 时把路径指给系统  
+   打开 **PowerShell / CMD**（**不要**在 WSL 终端里）：
+
+   ```powershell
+   setx WKHTMLTOPDF_CMD "C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+   setx WKHTMLTOPDF_ARGS "--enable-local-file-access"
+   ```
+
+   然后 **重启 Odoo 服务**（或关掉再开）。
+
+3. 验证  
+   进 Odoo →「设置 → 技术 → 参数 → 系统参数」  
+   如果看到 `wkhtmltopdf_path` 已经指向 Windows 路径，刷新即可；  
+   若没有，手动加一条：  
+   ```
+   key  : wkhtmltopdf_path
+   value: C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe
+   ```
+
+4. 再次打印报表  
+   Odoo 会调用 Windows 版 wkhtmltopdf，问题消失。
+
+------------------------------------------------
+备用方案（只在 WSL 里跑 Odoo 时才用）
+
+若你坚持让 Odoo 跑在 WSL 里，需要：
+
+- 给 wkhtmltopdf 装 **缺失的 Qt 依赖**  
+  ```bash
+  sudo apt update
+  sudo apt install -y libxrender1 libfontconfig1 libxext6 libjpeg-turbo8
+  ```
+- 在 Odoo 配置里把路径写成绝对 Linux 路径  
+  ```
+  wkhtmltopdf_path = /usr/bin/wkhtmltopdf
+  wkhtmltopdf_args = --enable-local-file-access
+  ```
+- 然后重启 Odoo。  
+  但 Windows 浏览器仍可能因 **路径转换/字体** 导致乱码，所以 **方案一更稳**。
+
+------------------------------------------------
+一句话总结  
+WSL2 里装的 wkhtmltopdf **只能给 WSL 里的进程用**。  
+Odoo 在 Windows 端运行 → 给它一份 **Windows 版 wkhtmltopdf** 并指对路径即可。
+
+*********************************************************************************************************************************************************
+
+你已经在 WSL2 里装好了 `wkhtmltopdf`，但 Odoo 仍提示“找不到”。这通常不是“没安装”，而是**Odoo 进程运行的环境找不到可执行文件**（PATH、运行用户、服务方式不同），或者**Odoo 配置没指到具体路径**。按下面顺序排查，基本必解：
+
+---
+
+## 1) 确认“谁”在跑 Odoo，以及它能否看到 wkhtmltopdf
+
+### 如果你是手工前台跑（同一个 shell/venv）
+
+在**同一个终端**里确认：
+
+```bash
+which wkhtmltopdf
+wkhtmltopdf --version
+# 你贴的结果是 /usr/bin/wkhtmltopdf 与 0.12.5，OK
+```
+
+### 如果你用 systemd 自启（`systemctl start odoo`）
+
+systemd 的环境和你当前 shell 不一定一样。显式测一把 **服务用户**能否找到命令（假设 User=bill）：
+
+```bash
+sudo -u bill -H bash -lc 'echo $PATH; which wkhtmltopdf; wkhtmltopdf --version'
+```
+
+* 如果这里找不到/报错，说明 Odoo 进程确实“看不到”它 → 走第 2 步。
+
+---
+
+## 2) 最稳的方式：在 `odoo.conf` 指定绝对路径
+
+直接把路径写死，绕过 PATH 差异：
+
+`/data/odoo.github.rainth888/odoo.conf`
+
+```ini
+[options]
+wkhtmltopdf  = /usr/bin/wkhtmltopdf
+wkhtmltoimage = /usr/bin/wkhtmltoimage
+; （顺手建议）
+report.url = http://127.0.0.1:8069
+web.base.url = http://<你的访问域名或IP>:8069
+```
+
+改完**重启 Odoo**：
+
+```bash
+# 前台跑就 Ctrl+C 再重启
+# systemd 跑：
+sudo systemctl daemon-reload
+sudo systemctl restart odoo
+```
+
+> `report.url` 让 wkhtmltopdf 渲染时回连 Odoo 走 127.0.0.1，更稳定。
+
+---
+
+## 3) 若还是提示：给 systemd 显式设置 PATH（仅自启服务时需要）
+
+编辑 `/etc/systemd/system/odoo.service`，在 `[Service]` 段补一行：
+
+```ini
+[Service]
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+```
+
+然后：
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart odoo
+```
+
+---
+
+## 4) 在当前用户能用，但服务里仍失败？做一次“直接渲染”自测
+
+用**同一个用户**直接跑 wkhtmltopdf，把登录页转成 PDF，看是否可用/是否需要 X：
+
+```bash
+wkhtmltopdf http://127.0.0.1:8069/web/login /tmp/odoo_login.pdf
+```
+
+* 能生成，说明渲染可行；
+* 如果报 `QXcbConnection` 等 X 相关错误，说明你装的是 apt 里的“需要 X”的构建，建议换 **官方静态包（patched Qt）**：
+
+  * 下载 `wkhtmltox_0.12.6-1.focal_amd64.deb`（或 0.12.5 的 focal 版）并安装：
+
+    ```bash
+    sudo apt remove -y wkhtmltopdf || true
+    sudo apt update && sudo apt install -y fontconfig xfonts-base xfonts-75dpi libxrender1 libxext6
+    sudo apt install -y /path/to/wkhtmltox_0.12.6-1.focal_amd64.deb
+    which wkhtmltopdf; wkhtmltopdf --version
+    ```
+  * 然后回到第 2 步在 `odoo.conf` 指路。
+
+---
+
+## 5) Odoo 里还有两处容易忽略的设置
+
+* **系统参数**（设置 → 技术 → 参数 → 系统参数）：
+
+  * `report.url` 设为 `http://127.0.0.1:8069`
+  * `web.base.url` 设为你的外网或内网可访问地址
+* **字体**（中文/特殊字符乱码）：
+
+  ```bash
+  sudo apt install -y fonts-noto-cjk fonts-dejavu ttf-wqy-zenhei
+  ```
+
+---
+
+## 6) 特殊拓扑提醒
+
+* **如果 Odoo 在 Docker 里运行**：必须把 wkhtmltopdf 装进 **Odoo 容器**（宿主机安装不生效），或自建镜像在 Dockerfile 里安装 `wkhtmltox`，并在容器内指定路径。
+* **WSL2 场景**：你现在是在 WSL 内跑 Odoo → 就在 WSL 内安装 wkhtmltopdf（你已做），并按上面方法在 `odoo.conf` 指定绝对路径即可。
+
+---
+
+### 速查清单（最常见两步就好用）
+
+1. `odoo.conf` 明确：
+
+```ini
+wkhtmltopdf  = /usr/bin/wkhtmltopdf
+wkhtmltoimage = /usr/bin/wkhtmltoimage
+report.url = http://127.0.0.1:8069
+```
+
+2. 重启 Odoo（或 systemd 并设置 PATH）。
+
+做完这两步，标签/报表打印的“找不到 wkhtmltopdf”提示就会消失。若还有报错，把 **`sudo -u <运行用户> which wkhtmltopdf` 的输出**和你的 **`odoo.conf`** 发我，我帮你对位看看是哪一步没有生效。
+
+
+# *********************************************************************************************************************************************************
+
+# 把“订单”打印成 票据打印机专用格式
+
+在 **Odoo 18** 里，如果你要把“订单”打印成 **票据打印机专用格式**，流程大致分 3 部分：
+
+---
+
+## 一、理解 Odoo 打印机制
+
+* Odoo 的打印（比如“报价单”、“订单”、“发票”）是基于 **QWeb 报表模板**生成的 PDF。
+* 这些模板是用 **XML + QWeb 指令**写的，可以控制内容、字段、排版。
+* 默认的报表格式适合 A4 打印，不适合票据打印机，所以你需要 **自定义报表模板**。
+
+---
+
+## 二、操作步骤
+
+### 1. 开启开发者模式
+
+* 进入 **设置 → 激活开发者模式**。
+* 这样可以在“技术”菜单里编辑报表。
+
+### 2. 找到订单的报表
+
+1. 进入 **设置 → 技术 → 报表 → 报表**。
+2. 搜索 `sale.order`，你会看到类似 **Quotation / Order** 的报表定义。
+
+   * 模型：`sale.order`
+   * 报表类型：`qweb-pdf`
+   * 模板：指向一个 QWeb 模板（比如 `sale.report_saleorder_document`）。
+
+### 3. 复制并自定义模板
+
+1. 进入 **设置 → 技术 → 用户界面 → 视图**。
+2. 搜索 `report_saleorder_document`（就是订单打印用的 QWeb 模板）。
+3. 复制一份（继承方式更好，避免覆盖官方模板）。
+
+   * 新模板里你可以用 QWeb 标签和 HTML/CSS 调整格式：
+
+     * 去掉多余表格线条
+     * 控制字体大小
+     * 设置票据宽度（比如 80mm 或 58mm）
+
+例如：
+
+```xml
+<t t-name="custom.report_saleorder_ticket">
+  <t t-call="web.external_layout">
+    <div class="page" style="width:80mm; font-size:12px;">
+      <h3 style="text-align:center;">订单</h3>
+      <p>客户：<span t-field="o.partner_id.name"/></p>
+      <p>订单号：<span t-field="o.name"/></p>
+      <table style="width:100%;">
+        <tr>
+          <th>商品</th><th>数量</th><th>价格</th>
+        </tr>
+        <tr t-foreach="o.order_line" t-as="line">
+          <td><span t-field="line.product_id.name"/></td>
+          <td><span t-field="line.product_uom_qty"/></td>
+          <td><span t-field="line.price_total"/></td>
+        </tr>
+      </table>
+      <p style="text-align:right;">合计：<span t-field="o.amount_total"/></p>
+    </div>
+  </t>
+</t>
+```
+
+### 4. 注册报表动作
+
+* 在 **设置 → 技术 → 报表**，新建一个报表，绑定：
+
+  * 模型：`sale.order`
+  * 报表类型：`qweb-pdf`
+  * 模板：选择你刚才新建的 `custom.report_saleorder_ticket`
+
+这样，订单上就会出现一个新的打印按钮（比如“打印票据”）。
+
+---
+
+## 三、让票据打印机打印
+
+1. 票据打印机一般是 **热敏打印机**，支持 58mm 或 80mm 宽度。
+2. 你的 QWeb 模板里设置好宽度，比如 `style="width:80mm;"`。
+3. 打印方式：
+
+   * 默认是生成 PDF，你可以直接在浏览器里选择 **票据打印机**。
+   * 如果要自动打印，可以安装 Odoo 的 **IoT Box** 或者配合 **cups 打印服务**做自动打印。
+
+---
+
+## 四、推荐开发流程
+
+1. 先在测试环境里复制默认模板，改成简化版本。
+2. 调整 CSS，直到在票据打印机里能正常显示。
+3. 再上线使用。
+
+---
+
+✅ **总结**
+
+* 在 Odoo 18 里，打印订单走的是 QWeb 模板。
+* 你需要复制/继承 `sale.order` 的报表模板，自定义成票据格式（80mm/58mm 宽）。
+* 注册一个新报表动作，让订单界面有“打印票据”按钮。
+* 最终通过票据打印机打印。
+
+---
+
+要不要我帮你写一个 **完整的 Odoo 自定义模块骨架**（含 `__manifest__.py`、报表 XML、模板 XML），你可以直接安装到 Odoo，就能生成一个“票据打印版订单”？
+
+太棒的需求！下面给你一份**可直接安装的 Odoo 18 自定义模块骨架**（“小票样式订单打印”），满足你贴的票据格式与排版。安装后，进入销售订单即可点击“打印小票”。
+
+---
+
+# 模块名称
+
+`imon_receipt`
+
+# 目录结构
+
+```
+imon_receipt/
+├─ __init__.py
+├─ __manifest__.py
+├─ models/
+│  └─ sale_order.py
+├─ report/
+│  ├─ receipt_report.xml      # 定义报表动作
+│  └─ receipt_template.xml    # QWeb小票模板
+└─ views/
+   └─ sale_order_views.xml    # 在订单页面加入按钮/字段（可选）
+```
+
+---
+
+## 1) `__manifest__.py`
+
+```python
+# -*- coding: utf-8 -*-
+{
+    "name": "IMON Receipt - Ticket Print",
+    "summary": "Jewelry IMON 小票格式销售订单打印",
+    "version": "1.0.0",
+    "category": "Accounting/Reporting",
+    "author": "Your Team",
+    "depends": ["sale", "account"],  # 使用 sale.order、税、金额等
+    "data": [
+        "report/receipt_template.xml",
+        "report/receipt_report.xml",
+        "views/sale_order_views.xml",
+    ],
+    "assets": {},
+    "license": "LGPL-3",
+    "application": False,
+    "installable": True,
+}
+```
+
+---
+
+## 2) `__init__.py`
+
+```python
+# -*- coding: utf-8 -*-
+from . import models
+```
+
+---
+
+## 3) `models/sale_order.py`
+
+> 给 sale.order 增加一些字段，便于直接填入“收据号 / 传票号 / 负责人 / 现金支付 / 找零 / 营业编号”等。星期文本也一并计算，方便模板展示。
+
+```python
+# -*- coding: utf-8 -*-
+from odoo import api, fields, models
+import datetime
+
+WEEKDAY_MAP = {
+    0: "星期一", 1: "星期二", 2: "星期三", 3: "星期四", 4: "星期五", 5: "星期六", 6: "星期日"
+}
+
+class SaleOrder(models.Model):
+    _inherit = "sale.order"
+
+    imon_business_no = fields.Char(string="营业编号", help="例：T2010701001070")
+    imon_receipt_no = fields.Char(string="收据号")
+    imon_slip_no = fields.Char(string="传票号")
+    imon_responsible = fields.Char(string="负责人", help="可直接录入，如 YOH")
+    imon_cash_paid = fields.Monetary(string="现金支付")
+    imon_change = fields.Monetary(string="找零")
+    imon_items_count = fields.Integer(string="合计件数", compute="_compute_imon_items_count", store=False)
+    imon_weekday_text = fields.Char(string="星期文本", compute="_compute_imon_weekday_text", store=False)
+
+    @api.depends("order_line.product_uom_qty")
+    def _compute_imon_items_count(self):
+        for order in self:
+            order.imon_items_count = int(sum(order.order_line.mapped("product_uom_qty")))
+
+    @api.depends("date_order")
+    def _compute_imon_weekday_text(self):
+        for order in self:
+            dt = fields.Datetime.context_timestamp(order, order.date_order) if order.date_order else datetime.datetime.now()
+            order.imon_weekday_text = WEEKDAY_MAP.get(dt.weekday(), "")
+
+```
+
+---
+
+## 4) `report/receipt_report.xml`
+
+> 定义一个新的报表动作，在销售订单页出现“打印小票”菜单项。类型使用 qweb-pdf（票据机打印 PDF 也可；若需直接ESC/POS打印需另行扩展）。
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <report
+      id="action_report_imon_receipt"
+      model="sale.order"
+      string="打印小票"
+      report_type="qweb-pdf"
+      name="imon_receipt.report_imon_receipt_ticket"
+      file="imon_receipt.report_imon_receipt_ticket"
+      print_report_name="'Receipt - %s' % (object.name)"
+  />
+</odoo>
+```
+
+---
+
+## 5) `report/receipt_template.xml`
+
+> QWeb 模板（80mm 宽热敏小票），直出你给的版式。注意中文/日文字体由系统打印端控制；wkhtmltopdf 默认字体可满足大部分场景，若需要更漂亮字体可在打印机/系统层安装。
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="report_imon_receipt_ticket">
+    <t t-call="web.external_layout">
+      <div class="page"
+           style="width:80mm; padding:2mm 3mm; font-size:12px; line-height:1.5; -webkit-print-color-adjust:exact;">
+
+        <!-- 抬头 -->
+        <div style="text-align:center; font-weight:700; font-size:15px;">
+          Jewelry IMON（井門珠宝）
+        </div>
+        <div style="text-align:center; margin-top:2px;">
+          电话：03-5826-8818
+        </div>
+        <div style="text-align:center;">
+          营业编号：<t t-esc="o.imon_business_no or ''"/>
+        </div>
+        <div style="text-align:center;">
+          地址：东京都台东区上野5-26-16
+        </div>
+
+        <div style="text-align:center; margin:6px 0; font-weight:700;">
+          ★黄金、铂金高价收购★<br/>
+          ★免费估价、鉴定★
+        </div>
+
+        <div style="text-align:center; font-weight:700; border:1px solid #000; display:inline-block; padding:1px 4px;">
+          免税 TAX FREE
+        </div>
+
+        <hr style="border:0; border-top:1px dashed #000; margin:8px 0"/>
+
+        <!-- 头部信息 -->
+        <div>
+          <t t-set="dt" t-value="o.date_order and o.date_order.astimezone(o.env.user.tz and pytz.timezone(o.env.user.tz) or None) if hasattr(o.date_order,'astimezone') else o.date_order"/>
+          <t t-set="locdt" t-value="o.date_order and o.date_order or o.create_date"/>
+          <t t-raw="0"/>
+          <div>
+            日期：
+            <t t-esc="format_datetime(o, o.date_order or o.create_date, tz=o.env.user.tz, dt_format='yyyy年MM月dd日（')"/>
+            <t t-esc="o.imon_weekday_text or ''"/>
+            <t t-esc="format_datetime(o, o.date_order or o.create_date, tz=o.env.user.tz, dt_format='）HH:mm')"/>
+          </div>
+          <div>编号：<t t-esc="o.name"/></div>
+          <div>收据号：<t t-esc="o.imon_receipt_no or ''"/></div>
+          <div>传票号：<t t-esc="o.imon_slip_no or ''"/></div>
+          <div>负责人：<t t-esc="o.imon_responsible or (o.user_id and o.user_id.name) or ''"/></div>
+        </div>
+
+        <hr style="border:0; border-top:1px dashed #000; margin:8px 0"/>
+
+        <!-- 商品明细 -->
+        <div style="font-weight:700; margin-bottom:4px;">商品明细</div>
+        <t t-foreach="o.order_line" t-as="line">
+          <div style="display:flex; justify-content:space-between;">
+            <div style="width:58mm; word-break:break-all;">
+              •<t t-esc="line.product_id.display_name"/>
+              ×<t t-esc="int(line.product_uom_qty) if float(line.product_uom_qty).is_integer() else line.product_uom_qty"/>
+              件
+            </div>
+            <div>
+              <t t-esc="formatLang(line.price_total, currency_obj=o.currency_id)"/>
+            </div>
+          </div>
+        </t>
+
+        <hr style="border:0; border-top:1px dashed #000; margin:8px 6px"/>
+
+        <!-- 合计 -->
+        <div style="display:flex; justify-content:space-between; font-weight:700;">
+          <div>合计（TOTAL）：<t t-esc="o.imon_items_count"/>件</div>
+          <div><t t-esc="formatLang(o.amount_total, currency_obj=o.currency_id)"/></div>
+        </div>
+        <div style="text-align:right; margin-top:3px;">
+          （含消费税TAX <t t-esc="int(round((o.amount_total - o.amount_untaxed) and (o.amount_total - o.amount_untaxed)/o.amount_untaxed*100 or 0))"/>%）
+        </div>
+
+        <hr style="border:0; border-top:1px dashed #000; margin:8px 6px"/>
+
+        <!-- 付款 -->
+        <div style="font-weight:700; margin-bottom:4px;">付款</div>
+        <div style="display:flex; justify-content:space-between;">
+          <div>•现金支付：</div>
+          <div><t t-esc="formatLang(o.imon_cash_paid or 0.0, currency_obj=o.currency_id)"/></div>
+        </div>
+        <div style="display:flex; justify-content:space-between;">
+          <div>•找零：</div>
+          <div><t t-esc="formatLang(o.imon_change or 0.0, currency_obj=o.currency_id)"/></div>
+        </div>
+
+      </div>
+    </t>
+  </template>
+</odoo>
+```
+
+> 说明：
+>
+> * 宽度设为 `80mm`，适配80mm票据机；若58mm，改为 `width:58mm`。
+> * 日期使用 `format_datetime`（Odoo 18 提供）+ 计算字段 `imon_weekday_text` 输出中文星期。
+> * 金额使用 `formatLang`，随订单币种显示。
+> * 明细行用 `line.price_total`（含税/不含税可按需调整成 `price_subtotal`）。
+> * 顶部“免税 TAX FREE”等完全按你样式。
+
+---
+
+## 6) `views/sale_order_views.xml`
+
+> 在销售订单表单上露出自定义字段，方便填“营业编号/收据号/传票号/负责人/现金/找零”，并在打印下拉里显示“打印小票”。
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="view_order_form_inherit_imon" model="ir.ui.view">
+    <field name="name">sale.order.form.imon.receipt</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale.view_order_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//sheet/notebook/page[1]" position="after">
+        <group string="IMON 收据信息">
+          <field name="imon_business_no"/>
+          <field name="imon_receipt_no"/>
+          <field name="imon_slip_no"/>
+          <field name="imon_responsible"/>
+          <field name="imon_cash_paid"/>
+          <field name="imon_change"/>
+          <field name="imon_items_count" readonly="1"/>
+        </group>
+      </xpath>
+      <!-- 在 打印 下拉里显示“打印小票”（新版通常自动出现report按钮；此处确保显示） -->
+      <xpath expr="//header" position="inside">
+        <button name="%(imon_receipt.action_report_imon_receipt)d"
+                type="action" string="打印小票" class="btn-secondary"
+                context="{'discard_logo_check': True}"/>
+      </xpath>
+    </field>
+  </record>
+</odoo>
+```
+
+---
+
+# 使用步骤
+
+1. 把上面的目录与文件放到 Odoo 的自定义模块目录（如 `/opt/odoo/custom_addons/imon_receipt`）。
+2. **更新应用列表**：设置 → 应用 → 更新应用列表。
+3. 搜索并安装 **IMON Receipt - Ticket Print**。
+4. 进入 **销售 → 报价单/订单**，打开一张订单：
+
+   * 填写：营业编号、收据号、传票号、负责人、现金支付、找零。
+   * 点击顶部的 **打印小票**。
+5. 选择你的 **票据打印机**（80mm/58mm），打印即可。
+
+---
+
+# 打印与显示小贴士
+
+* 建议安装 `wkhtmltopdf`（Odoo 日志也提示缺少），否则 PDF 打印可能效果不稳定。
+* 如果你希望**直接无 PDF 弹窗**在门店自动打印，需要配 **Odoo IoT Box** 或在内网配置 CUPS 打印服务与自定义自动打印模块（后续我可以给你再做一个“直打版”）。
+* 需要 58mm → 把模板 `width:80mm;` 改为 `width:58mm;`，适当调小字体。
+* 若需把“商品显示”改为你展示的**精确名称**（如“PT喜平手链 / K18喜平手链”），在产品名或订单行描述填写即可，模板取 `line.product_id.display_name` 或 `line.name`。（`line.name`更自由）
+
+---
+
+如果你愿意，我可以把这套代码**打成一个zip**给你直接安装，或者根据你们的**LOGO、公司抬头、税号位置**微调一版，做到“开箱即用”。
+
 
 *********************************************************************************************************************************************************
 
 
+
+*********************************************************************************************************************************************************
+
+
+
+*********************************************************************************************************************************************************
+
+
+
+*********************************************************************************************************************************************************
+
+
+
+*********************************************************************************************************************************************************
+
+REPO_URL="https://rainth888:thun700522@github.com/rainth888/odoo.git"
+WORK_DIR="/data/odoo.github.rainth888"
+BRANCH="Branch_18.0.chowtaiking"
+
+git clone --branch "$BRANCH" --single-branch "$REPO_URL" .
 
 *********************************************************************************************************************************************************
 
