@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <!-- 在销售订单表单页眉新增“打印小票”按钮（HTML预览 + PDF） -->
+    <record id="view_order_form_inherit_receipt_button" model="ir.ui.view">
+      <field name="name">sale.order.form.thermal.receipt.button</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//header" position="inside">
+          <button name="%(sale_receipt_thermal.action_report_sale_receipt_58mm_html)d"
+                  string="打印小票(预览)"
+                  type="action"
+                  class="btn btn-secondary"/>
+          <button name="%(sale_receipt_thermal.action_report_sale_receipt_58mm_pdf)d"
+                  string="打印小票(PDF)"
+                  type="action"
+                  class="btn btn-secondary"/>
+          <button name="%(sale_receipt_thermal.action_report_sale_receipt_80mm_html)d"
+                  string="打印小票80mm(预览)"
+                  type="action"
+                  class="btn btn-secondary"/>
+          <button name="%(sale_receipt_thermal.action_report_sale_receipt_80mm_pdf)d"
+                  string="打印小票80mm(PDF)"
+                  type="action"
+                  class="btn btn-secondary"/>
+        </xpath>
+      </field>
+    </record>
+  </data>
+</odoo>

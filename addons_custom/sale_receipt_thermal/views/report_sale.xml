@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+  <!-- 58mm 票据纸张格式 -->
+  <record id="paperformat_58mm_receipt" model="report.paperformat">
+    <field name="name">Receipt 58mm</field>
+    <field name="default" eval="False"/>
+    <field name="format">custom</field>
+    <field name="page_width">58</field>       <!-- 单位：毫米 -->
+    <field name="page_height">300</field>     <!-- 可调长，比如 300/600；热敏票据较长 -->
+    <field name="orientation">Portrait</field>
+    <field name="margin_top">2</field>
+    <field name="margin_bottom">2</field>
+    <field name="margin_left">2</field>
+    <field name="margin_right">2</field>
+    <field name="dpi">203</field>
+    <field name="header_line" eval="False"/>
+    <field name="header_spacing">0</field>
+    <field name="disable_shrinking" eval="True"/>
+  </record>
+
+  <!-- ② 可选：80mm 纸张 -->
+  <record id="paperformat_80mm_receipt" model="report.paperformat">
+    <field name="name">Receipt 80mm</field>
+    <field name="default" eval="False"/>
+    <field name="format">custom</field>
+    <field name="page_width">80</field>
+    <field name="page_height">300</field>
+    <field name="orientation">Portrait</field>
+    <field name="margin_top">2</field>
+    <field name="margin_bottom">2</field>
+    <field name="margin_left">2</field>
+    <field name="margin_right">2</field>
+    <field name="dpi">203</field>
+    <field name="header_line" eval="False"/>
+    <field name="header_spacing">0</field>
+    <field name="disable_shrinking" eval="True"/>
+  </record>
+
+  <!-- ③ QWeb 模板：支持多记录（docs）渲染，适配热敏宽度 -->
+  <template id="report_sale_receipt_document">
+    <t t-call="web.basic_layout">
+      <t t-foreach="docs" t-as="doc">
+        <div class="page o_sale_receipt" t-attf-style="width:#{doc.company_id.receipt_paper_width or '58'}mm; font-size:#{doc.company_id.receipt_font_size or '10'}px;">
+          <style>
+            .o_sale_receipt {
+              font-family: "Noto Sans CJK SC","DejaVu Sans",sans-serif;
+              line-height: 1.25; color: #000;
+              padding: 2mm;
+              margin: 0 auto;
+            }
+            .center { text-align:center; }
+            .bold { font-weight:700; }
+            .xs { font-size:8pt; }
+            .muted { color:#333; }
+            .line { border-top:1px dashed #000; margin:4px 0; }
+            table { width:100%; border-collapse:collapse; }
+            th,td { padding:2px 0; vertical-align:top; }
+            .r { text-align:right; }
+            .no-break { page-break-inside: avoid; }
+          </style>
+
+          <div class="center">
+            <t t-if="doc.company_id.receipt_show_logo and doc.company_id.logo">
+              <img t-att-src="'data:image/png;base64,%s' % (doc.company_id.logo)" style="max-height:40px;"/>
+              <br/>
+            </t>
+            <div class="bold">销售小票</div>
+            <div t-esc="(doc.company_id and doc.company_id.display_name) or ''"/>
+            <div class="xs muted">
+              <t t-esc="doc.company_id and doc.company_id.phone or ''"/> /
+              <t t-esc="doc.company_id and doc.company_id.email or ''"/>
+            </div>
+          </div>
+
+          <div class="line"></div>
+
+          <div class="no-break">
+            <table>
+              <tr><td>订单号：</td><td class="r" t-esc="doc.name"/></tr>
+              <tr><td>客户：</td><td class="r" t-esc="doc.partner_id.display_name"/></tr>
+              <tr><td>日期：</td><td class="r" t-esc="doc.date_order and doc.date_order.strftime('%Y-%m-%d %H:%M')"/></tr>
+              <tr><td>销售员：</td><td class="r" t-esc="doc.user_id and doc.user_id.name or ''"/></tr>
+              <tr t-if="doc.payment_term_id"><td>付款条件：</td><td class="r" t-esc="doc.payment_term_id.name"/></tr>
+            </table>
+          </div>
+
+          <div class="line"></div>
+
+          <div class="no-break">
+            <table>
+              <thead>
+                <tr><th>品名</th><th class="r">数量</th><th class="r">单价</th><th class="r">小计</th></tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="doc.order_line" t-as="l">
+                  <td>
+                    <t t-esc="l.product_id.display_name"/>
+                    <t t-if="l.name and l.name.strip() and l.name.strip() != l.product_id.display_name">
+                      <br/><span class="xs muted" t-esc="l.name"/>
+                    </t>
+                  </td>
+                  <td class="r" t-esc="l.product_uom_qty"/>
+                  <td class="r" t-esc="l.price_unit" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                  <td class="r" t-esc="l.price_subtotal" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="line"></div>
+
+          <div class="no-break">
+            <table>
+              <tr><td>未税：</td><td class="r" t-esc="doc.amount_untaxed" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/></tr>
+              <tr><td>税额：</td><td class="r" t-esc="doc.amount_tax" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/></tr>
+              <tr class="bold"><td>应付合计：</td><td class="r" t-esc="doc.amount_total" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/></tr>
+            </table>
+          </div>
+
+          <div class="line"></div>
+
+          <div class="xs muted no-break">
+            <t t-if="doc.note">
+              备注：<t t-esc="doc.note"/><br/>
+            </t>
+            <t t-if="doc.company_id.receipt_show_barcode">
+              <div class="center" style="margin-top:4px;">
+                <img t-att-src="'/report/barcode/Code128/%s?width=300&amp;height=60&amp;humanreadable=1' % (doc.name or '')" alt="条码"/>
+              </div>
+            </t>
+            <t t-if="doc.company_id.receipt_show_qr">
+              <div class="center" style="margin-top:4px;">
+                <img t-att-src="'/report/barcode/QR/%s?width=150&amp;height=150' % (doc.name or '')" alt="二维码"/>
+              </div>
+            </t>
+            <t t-if="doc.company_id.receipt_footer_note">
+              <div class="center"><t t-esc="doc.company_id.receipt_footer_note"/></div>
+            </t>
+            <t t-else="">
+              <div class="center">谢谢惠顾！</div>
+            </t>
+          </div>
+        </div>
+      </t>
+    </t>
+  </template>
+
+  <!-- 80mm 模板：固定 80mm 宽度（可用于独立动作） -->
+  <template id="report_sale_receipt_document_80mm">
+    <t t-call="web.basic_layout">
+      <t t-foreach="docs" t-as="doc">
+        <div class="page o_sale_receipt" style="width:80mm;">
+          <t t-call="sale_receipt_thermal.report_sale_receipt_document">
+            <t t-set="doc" t-value="doc"/>
+          </t>
+        </div>
+      </t>
+    </t>
+  </template>
+
+  <!-- ④ 报表动作：PDF 与 HTML 预览各一份（挂在“打印”菜单） -->
+  <record id="action_report_sale_receipt_58mm_pdf" model="ir.actions.report">
+    <field name="name">销售小票（58mm PDF）</field>
+    <field name="model">sale.order</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">sale_receipt_thermal.report_sale_receipt_document</field>
+    <field name="print_report_name">'Receipt-%s.pdf' % (object.name)</field>
+    <field name="paperformat_id" ref="sale_receipt_thermal.paperformat_58mm_receipt"/>
+    <field name="binding_model_id" ref="sale.model_sale_order"/>
+    <field name="binding_type">report</field>
+  </record>
+
+  <record id="action_report_sale_receipt_58mm_html" model="ir.actions.report">
+    <field name="name">销售小票（预览HTML 58mm）</field>
+    <field name="model">sale.order</field>
+    <field name="report_type">qweb-html</field>
+    <field name="report_name">sale_receipt_thermal.report_sale_receipt_document</field>
+    <field name="paperformat_id" ref="sale_receipt_thermal.paperformat_58mm_receipt"/>
+    <field name="binding_model_id" ref="sale.model_sale_order"/>
+    <field name="binding_type">report</field>
+  </record>
+
+  <!-- 80mm 动作（HTML/PDF） -->
+  <record id="action_report_sale_receipt_80mm_pdf" model="ir.actions.report">
+    <field name="name">销售小票（80mm PDF）</field>
+    <field name="model">sale.order</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">sale_receipt_thermal.report_sale_receipt_document_80mm</field>
+    <field name="print_report_name">'Receipt-%s.pdf' % (object.name)</field>
+    <field name="paperformat_id" ref="sale_receipt_thermal.paperformat_80mm_receipt"/>
+    <field name="binding_model_id" ref="sale.model_sale_order"/>
+    <field name="binding_type">report</field>
+  </record>
+
+  <record id="action_report_sale_receipt_80mm_html" model="ir.actions.report">
+    <field name="name">销售小票（预览HTML 80mm）</field>
+    <field name="model">sale.order</field>
+    <field name="report_type">qweb-html</field>
+    <field name="report_name">sale_receipt_thermal.report_sale_receipt_document_80mm</field>
+    <field name="paperformat_id" ref="sale_receipt_thermal.paperformat_80mm_receipt"/>
+    <field name="binding_model_id" ref="sale.model_sale_order"/>
+    <field name="binding_type">report</field>
+  </record>
+
+</odoo>

@@ -1,0 +1,11 @@
+<odoo>
+  <template id="report_sale_receipt_58mm">
+    <t t-call="web.external_layout">
+      <div class="page" style="width:58mm; padding:2mm; font-size:12px; line-height:1.4;">
+        <!-- 你的票据内容 -->
+        <div style="text-align:center; font-weight:700;">Jewelry IMON（井門珠宝）</div>
+        <!-- ... -->
+      </div>
+    </t>
+  </template>
+</odoo>

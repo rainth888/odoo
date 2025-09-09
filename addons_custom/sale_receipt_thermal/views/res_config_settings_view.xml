@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <record id="res_config_settings_view_form_receipt" model="ir.ui.view">
+      <field name="name">res.config.settings.thermal.receipt</field>
+      <field name="model">res.config.settings</field>
+      <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//form" position="inside">
+          <div class="app_settings_block" data-string="热敏小票" string="热敏小票">
+            <h2>热敏小票</h2>
+            <group>
+              <group>
+                <field name="receipt_paper_width"/>
+                <field name="receipt_font_size"/>
+              </group>
+              <group>
+                <field name="receipt_show_logo"/>
+                <field name="receipt_show_barcode"/>
+                <field name="receipt_show_qr"/>
+              </group>
+            </group>
+            <group>
+              <field name="receipt_footer_note" placeholder="谢谢惠顾，欢迎下次光临"/>
+            </group>
+          </div>
+        </xpath>
+      </field>
+    </record>
+  </data>
+</odoo>

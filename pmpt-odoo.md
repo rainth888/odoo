@@ -695,4 +695,190 @@ RPC_ERROR: Odoo Server Error
 
 分析自定义模块启用出问题的原因并解决。文件夹D:\_projects\odoo.github.rainth888\addons_custom\hello_demo是我写的一个简单的hello world模块，应用更新可以查询到，但是'启用'模块时，报错，错误信息是D:\_projects\odoo.github.rainth888\logs\log20250908182600.md
 
+完善模块的代码，满足需求描述。自定义模块D:\_projects\odoo.github.rainth888\addons_custom\sale_receipt_thermal，是一个'票据打印机专用格式'打印生成，用于热敏纸小票打印预览输出功能。
+
+点击订单的'销售小票（预览HTML 58mm）'按钮，出错了：D:\_projects\odoo.github.rainth888\logs\log20250909140600.md
+
+```
+> 问题已定位并修复点
+
+  - 根因：QWeb 渲染 report_sale_receipt_document 时，模板内调用了 t-esc="formatLang(...)"。在你当前 Odoo 环境中，QWeb 上下文没有注入 formatLang（解析为 None），导致 NoneType is not callable 报错。
+  - 影响行：addons_custom/sale_receipt_thermal/views/report_sale.xml 第一次出现的位置是数量列 t-esc="formatLang(l.product_uom_qty, dp='Product Unit of Measure')"，随后的金额字段也使用了 formatLang。
+
+  我做了什么
+
+  - 将销售小票模板中的 formatLang 全部替换为可用的格式化方式：
+      - 数量：改为直接输出 t-esc="l.product_uom_qty"
+      - 金额相关：改为 t-esc="format_amount(..., doc.currency_id)"
+  - 修改文件：addons_custom/sale_receipt_thermal/views/report_sale.xml
+
+  为什么这样改
+
+  - 金额字段：Odoo 提供了 format_amount(env, amount, currency) 在 QWeb 中可直接用，保持币种与千分位、本地化格式正常。
+  - 数量字段：避免 formatLang 缺失引发报错，先以原值输出，保证预览不再崩溃。
+
+  后续建议
+
+  - 其它模板也有同类用法，点击对应报表时大概率同样报错。建议一并替换：
+      - addons_custom/sale_receipt_thermal/views/report_pos.xml
+      - addons_custom/sale_receipt_thermal/views/report_account.xml
+  - 如果你需要数量按本地化/固定小数展示，我可以改成例如 t-esc="'%.2f' % l.product_uom_qty" 或根据 UoM 智能取位数。
+```
+
+```
+> 已统一修复 POS 与发票小票模板中的 formatLang 问题。
+
+  变更内容
+
+  - 替换文件：
+      - addons_custom/sale_receipt_thermal/views/report_pos.xml
+      - 数量：`t-esc="l.qty"`
+      - 金额：`t-esc="format_amount(..., doc.currency_id)"`
+      - 合计栏位全部改用 `format_amount`
+  - addons_custom/sale_receipt_thermal/views/report_account.xml
+      - 数量：`t-esc="l.quantity"`
+      - 金额：`t-esc="format_amount(..., doc.currency_id)"`
+      - 合计/已收/未收全部改用 `format_amount`
+  - 当前模块内已无 formatLang( 残留。
+
+  下一步
+
+  - 在 Odoo 中升级模块以加载新模板：
+      - 后台应用列表中更新模块“sale_receipt_thermal”，或
+      - 命令行启动时加 -u sale_receipt_thermal。
+  - 刷新页面，重试“预览HTML 58mm/80mm”和 PDF 按钮。
+
+  可选优化
+
+  - 需要数量固定小数位吗？可按需改为如 t-esc="'%.2f' % l.qty" 或根据 UoM 精度设定位数。我可以帮你统一调整。
+```
+
+执行'销售'-'订单'-'订单'，选择一个订单，然后点击菜单'打印小票（预览）'，出现'500: Internal Server Error',前端错误信息：D:\_projects\odoo.github.rainth888\logs\log20250909173400.md，服务端错误信息：D:\_projects\odoo.github.rainth888\logs\log20250909173401.md
+
+
+
+#  小票
+```
+> 我已完善自定义模块 sale_receipt_thermal，实现热敏小票的专用格式与“预览输出”功能，并补齐使用入口。
+
+  已做的关键改动
+
+  - 报表模板与预览
+      - 新增/修复 QWeb 模板 sale_receipt_thermal.report_sale_receipt_document（支持多单据 docs 渲染，窄幅布局，内置 58mm 宽度与适配 CSS）。
+      - 新增报表动作（挂到“打印”菜单与页眉按钮）：
+      - `销售小票（预览HTML 58mm）`：`qweb-html`，用于浏览器预览后直接打印到热敏机。
+      - `销售小票（58mm PDF）`：`qweb-pdf`，生成 PDF 便于归档或转发。
+      - 定义了 58mm 和 80mm 两个 report.paperformat（当前模板默认 58mm 宽度）。
+  - 销售订单操作入口
+      - 移除了旧的 <report> 声明冲突（改为统一 ir.actions.report 记录）。
+      - 保留了未引用的示例 template 文件（不在 manifest 中，不会加载）。
+
+  涉及文件
+
+  - addons_custom/sale_receipt_thermal/__manifest__.py
+      - 增加数据文件：views/sale_order_view.xml
+      - 定义 paperformat_58mm/80mm
+      - 模板 report_sale_receipt_document（含 58mm 宽度 CSS）
+  使用方法
+
+  - 更新应用列表并安装“Sale Receipt Thermal”模块。
+  - 进入 销售 → 报价单/订单，打开任一单据：
+      - 点击“打印小票(预览)”在浏览器中预览，使用系统打印对话框选择你的热敏打印机。
+      - 或点击“打印小票(PDF)”生成 PDF。
+  - 打印设置建议
+      - 纸张：58mm（或打印机对应的“收据纸宽度”）
+      - 边距：无
+      - 缩放：100%（或适配打印机）
+      - 关闭页眉/页脚，启用背景图形（若有需要）
+  可选增强（如需我继续完善）
+
+  - 增加 80mm 版本的预览动作（单独模板宽度 80mm）。
+  - 小票信息扩展：公司 Logo、二维码/条码、付款信息、页脚条款、门店信息等。
+  - 控制项：系统参数或公司配置中选择默认纸宽（58/80mm）、字体大小等。
+  - 适配发票（account.move）或 POS 订单的小票格式。
+
+  如需我把 80mm 的 HTML 预览也做成独立动作，请告诉我是否要同样添加页眉按钮。
+```
+
+```
+
+> 我已把“可选增强”全部实现到模块 sale_receipt_thermal，并保持与 Odoo 18 的新规范兼容（list 视图、报表等）。
+
+  已实现的增强
+
+  - 80mm 版本
+      - 新增 80mm 模板与动作（HTML 预览 + PDF），挂载到销售订单的“打印”菜单，并在订单页眉加了按钮。
+      - 模板 ID：sale_receipt_thermal.report_sale_receipt_document_80mm
+      - 动作：action_report_sale_receipt_80mm_html、action_report_sale_receipt_80mm_pdf
+  - 小票信息扩展
+      - 公司 Logo（可开关）、条码/二维码（可开关）、付款条件、页脚备注。
+      - 票头：公司名、电话、邮箱；主体：订单/发票/门店信息，明细与金额；尾部：条码/二维码、备注。
+  - 配置项（公司级）
+      - 在“设置 → 常规设置”中新增“热敏小票”区域：
+      - 小票纸宽：58mm/80mm（`receipt_paper_width`）
+      - 字体大小：8/10/12/14（px）（`receipt_font_size`）
+      - 显示公司 Logo（`receipt_show_logo`）
+      - 显示条码（`receipt_show_barcode`，Code128：单据号）
+      - 显示二维码（`receipt_show_qr`，QR：单据号）
+      - 页脚备注（`receipt_footer_note`）
+  - 适配发票（account.move）
+      - 模板：sale_receipt_thermal.report_invoice_receipt_document（可根据公司配置动态 58/80mm 与字体）
+      - 动作（自动出现在“打印”中）：action_report_invoice_receipt_58mm_html/_pdf、action_report_invoice_receipt_80mm_html/_pdf
+      - 内容涵盖客户、开票/到期、开票人、付款条件、已收/未收、明细与合计。
+  - 适配 POS 订单（pos.order）
+      - 模板：sale_receipt_thermal.report_pos_receipt_document
+      - 动作（“打印”中）：action_report_pos_receipt_58mm_html/_pdf、action_report_pos_receipt_80mm_html/_pdf
+      - 内容涵盖订单号、日期、收银员、门店、明细与合计。
+  - 销售单页眉按钮
+      - 已新增四个按钮：打印小票(预览)、打印小票(PDF)、打印小票80mm(预览)、打印小票80mm(PDF)
+
+  变更文件
+
+  - 视图与报表
+      - addons_custom/sale_receipt_thermal/views/report_sale.xml（核心销售小票模板、纸型、动作）
+      - addons_custom/sale_receipt_thermal/views/sale_order_view.xml（页眉按钮）
+      - addons_custom/sale_receipt_thermal/views/report_account.xml（发票小票）
+      - addons_custom/sale_receipt_thermal/views/report_pos.xml（POS 小票）
+      - addons_custom/sale_receipt_thermal/views/res_config_settings_view.xml（设置页）
+  - 模型
+      - addons_custom/sale_receipt_thermal/models/res_company.py（公司配置字段）
+      - addons_custom/sale_receipt_thermal/models/res_config_settings.py（设置页字段）
+      - addons_custom/sale_receipt_thermal/models/__init__.py（导入新模型）
+  - 清单
+      - addons_custom/sale_receipt_thermal/__manifest__.py（新增依赖 account, point_of_sale 与数据文件）
+
+  使用说明
+
+  - 安装/升级模块
+      - 更新应用列表，安装或升级“Sale Receipt Thermal”。
+  - 设置默认样式
+      - 进入“设置 → 常规设置”，找到“热敏小票”配置，选择纸宽（58/80mm）、字体、显示项与页脚备注。保存。
+  - 销售订单打印
+      - 打开销售订单，页眉按钮可直接“预览”或生成“PDF”；或在“打印”里选择对应动作。
+  - 发票打印
+      - 打开客户发票（account.move），在“打印”菜单中选择“发票小票（预览/ PDF）（58/80mm）”。
+  - POS 订单打印
+      - 打开 POS 订单（后台），在“打印”菜单中选择“POS 小票（预览/ PDF）（58/80mm）”。
+  - 打印机建议
+      - 打印对话框选择热敏打印机；纸张设为 58mm/80mm；边距无；缩放 100%；关闭页眉/页脚，必要时启用背景图形。
+
+  注意
+
+  - Odoo 18 中列表视图与动作已使用 list，模板已遵循新规范。
+  - 条码/二维码路由使用 Odoo 内置 /report/barcode/；若打印机分辨率低，可适当缩小 width/height 参数。
+  - 若只想用“默认纸宽”（按公司设置），可使用“预览/ PDF（58mm）”的动作，它的模板会动态按公司选择宽度渲染；也可直接用“80mm”动作固定为 80mm。
+
+  需要我再把发票或 POS 的页眉按钮也加上吗，或按你的终端机型微调条码/二维码大小和字体间距？
+```
+
+
+
+
+
+
+
+
+
+
+
 
