@@ -41,105 +41,117 @@
   <template id="report_sale_receipt_document">
     <t t-call="web.basic_layout">
       <t t-foreach="docs" t-as="doc">
-        <div class="page o_sale_receipt" t-attf-style="width:#{doc.company_id.receipt_paper_width or '58'}mm; font-size:#{doc.company_id.receipt_font_size or '10'}px;">
+        <t t-set="company" t-value="doc.company_id"/>
+        <div class="page o_sale_receipt" t-attf-style="width:#{company.receipt_paper_width or '58'}mm; font-size:#{company.receipt_font_size or '10'}px;">
           <style>
-            .o_sale_receipt {
-              font-family: "Noto Sans CJK SC","DejaVu Sans",sans-serif;
-              line-height: 1.25; color: #000;
-              padding: 2mm;
-              margin: 0 auto;
-            }
-            .center { text-align:center; }
-            .bold { font-weight:700; }
-            .xs { font-size:8pt; }
-            .muted { color:#333; }
-            .line { border-top:1px dashed #000; margin:4px 0; }
-            table { width:100%; border-collapse:collapse; }
-            th,td { padding:2px 0; vertical-align:top; }
-            .r { text-align:right; }
-            .no-break { page-break-inside: avoid; }
+            .o_sale_receipt { font-family: "Noto Sans CJK SC","DejaVu Sans",sans-serif; line-height:1.35; color:#000; padding:2mm; margin:0 auto; }
+            .center { text-align:center; } .bold { font-weight:700; } .xs { font-size:8pt; } .muted { color:#333; }
+            .line { border-top:1px dashed #000; margin:6px 0; } .mb4{margin-bottom:4px}
+            table { width:100%; border-collapse:collapse; } th,td { padding:2px 0; vertical-align:top; }
+            .r { text-align:right; } .l{ text-align:left; }
+            .list-row { display:flex; justify-content:space-between; }
+            .bullet::before { content:'\2022'; margin-right:4px; }
           </style>
 
+          <!-- 抬头信息 -->
           <div class="center">
-            <t t-if="doc.company_id.receipt_show_logo and doc.company_id.logo">
-              <img t-att-src="'data:image/png;base64,%s' % (doc.company_id.logo)" style="max-height:40px;"/>
-              <br/>
+            <div class="bold" t-esc="company.display_name"/>
+            <div class="xs">电话：<t t-esc="company.phone or ''"/></div>
+            <div class="xs" t-if="company.receipt_business_number">营业编号：<t t-esc="company.receipt_business_number"/></div>
+            <div class="xs" t-if="company.partner_id and company.partner_id.contact_address">地址：<t t-esc="company.partner_id.contact_address"/></div>
+          </div>
+
+          <t t-if="company.receipt_promo_lines">
+            <div class="line"></div>
+            <t t-foreach="(company.receipt_promo_lines or '').split('\n')" t-as="pline">
+              <div class="center bold"><t t-esc="pline"/></div>
             </t>
-            <div class="bold">销售小票</div>
-            <div t-esc="(doc.company_id and doc.company_id.display_name) or ''"/>
-            <div class="xs muted">
-              <t t-esc="doc.company_id and doc.company_id.phone or ''"/> /
-              <t t-esc="doc.company_id and doc.company_id.email or ''"/>
+          </t>
+
+          <t t-if="company.receipt_slogan">
+            <div class="line"></div>
+            <div class="center bold"><t t-esc="company.receipt_slogan"/></div>
+          </t>
+
+          <div class="line"></div>
+
+          <!-- 单据信息 -->
+          <div>
+            <div>日期：
+              <t t-if="doc.date_order">
+                <t t-esc="doc.date_order.strftime('%Y年%m月%d日')"/>
+                （<t t-esc="['星期一','星期二','星期三','星期四','星期五','星期六','星期日'][doc.date_order.weekday()]"/>）
+                <t t-esc="doc.date_order.strftime('%H:%M')"/>
+              </t>
             </div>
+            <div>编号：<t t-esc="doc.name"/></div>
+            <div>收据号：（）</div>
+            <div>传票号：（）</div>
+            <div>负责人：<t t-esc="doc.user_id and doc.user_id.name or ''"/></div>
           </div>
 
           <div class="line"></div>
 
-          <div class="no-break">
-            <table>
-              <tr><td>订单号：</td><td class="r" t-esc="doc.name"/></tr>
-              <tr><td>客户：</td><td class="r" t-esc="doc.partner_id.display_name"/></tr>
-              <tr><td>日期：</td><td class="r" t-esc="doc.date_order and doc.date_order.strftime('%Y-%m-%d %H:%M')"/></tr>
-              <tr><td>销售员：</td><td class="r" t-esc="doc.user_id and doc.user_id.name or ''"/></tr>
-              <tr t-if="doc.payment_term_id"><td>付款条件：</td><td class="r" t-esc="doc.payment_term_id.name"/></tr>
-            </table>
-          </div>
+          <!-- 商品明细 -->
+          <div class="mb4">商品明细</div>
+          <t t-foreach="doc.order_line" t-as="l">
+            <div class="list-row">
+              <div class="l bullet">
+                <t t-esc="l.product_id.display_name"/> ×<t t-esc="l.product_uom_qty"/>件
+              </div>
+              <div class="r" t-esc="l.price_subtotal" t-options="{'widget':'monetary','display_currency': doc.currency_id}"/>
+            </div>
+          </t>
 
           <div class="line"></div>
 
-          <div class="no-break">
-            <table>
-              <thead>
-                <tr><th>品名</th><th class="r">数量</th><th class="r">单价</th><th class="r">小计</th></tr>
-              </thead>
-              <tbody>
-                <tr t-foreach="doc.order_line" t-as="l">
-                  <td>
-                    <t t-esc="l.product_id.display_name"/>
-                    <t t-if="l.name and l.name.strip() and l.name.strip() != l.product_id.display_name">
-                      <br/><span class="xs muted" t-esc="l.name"/>
-                    </t>
-                  </td>
-                  <td class="r" t-esc="l.product_uom_qty"/>
-                  <td class="r" t-esc="l.price_unit" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
-                  <td class="r" t-esc="l.price_subtotal" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
-                </tr>
-              </tbody>
-            </table>
+          <!-- 合计 -->
+          <t t-set="total_qty" t-value="sum([l.product_uom_qty for l in doc.order_line])"/>
+          <div class="list-row bold">
+            <div class="l">合计（TOTAL）：<t t-esc="int(total_qty) if total_qty == int(total_qty) else total_qty"/>件</div>
+            <div class="r" t-esc="doc.amount_total" t-options="{'widget':'monetary','display_currency': doc.currency_id}"/>
           </div>
+          <div class="xs muted">（含消费税TAX 10%）</div>
 
-          <div class="line"></div>
-
-          <div class="no-break">
-            <table>
-              <tr><td>未税：</td><td class="r" t-esc="doc.amount_untaxed" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/></tr>
-              <tr><td>税额：</td><td class="r" t-esc="doc.amount_tax" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/></tr>
-              <tr class="bold"><td>应付合计：</td><td class="r" t-esc="doc.amount_total" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/></tr>
-            </table>
-          </div>
-
-          <div class="line"></div>
-
-          <div class="xs muted no-break">
-            <t t-if="doc.note">
-              备注：<t t-esc="doc.note"/><br/>
+          <!-- 付款信息（如可用） -->
+          <t t-if="doc.invoice_ids">
+            <div class="line"></div>
+            <div class="mb4">付款</div>
+            <t t-set="paid" t-value="sum([inv.amount_total - inv.amount_residual for inv in doc.invoice_ids if inv.state in ('posted','paid')])"/>
+            <t t-if="paid">
+              <div class="list-row">
+                <div class="l bullet">已收：</div>
+                <div class="r" t-esc="paid" t-options="{'widget':'monetary','display_currency': doc.currency_id}"/>
+              </div>
+              <t t-set="change" t-value="paid - doc.amount_total"/>
+              <t t-if="change &gt; 0">
+                <div class="list-row">
+                  <div class="l bullet">找零：</div>
+                  <div class="r" t-esc="change" t-options="{'widget':'monetary','display_currency': doc.currency_id}"/>
+                </div>
+              </t>
             </t>
-            <t t-if="doc.company_id.receipt_show_barcode">
+          </t>
+
+          <div class="line"></div>
+
+          <!-- 备注与底部信息/条码 -->
+          <div class="xs muted no-break">
+            <t t-if="doc.note">备注：<t t-esc="doc.note"/><br/></t>
+            <t t-if="company.receipt_show_barcode">
               <div class="center" style="margin-top:4px;">
                 <img t-att-src="'/report/barcode/Code128/%s?width=300&amp;height=60&amp;humanreadable=1' % (doc.name or '')" alt="条码"/>
               </div>
             </t>
-            <t t-if="doc.company_id.receipt_show_qr">
+            <t t-if="company.receipt_show_qr">
               <div class="center" style="margin-top:4px;">
                 <img t-att-src="'/report/barcode/QR/%s?width=150&amp;height=150' % (doc.name or '')" alt="二维码"/>
               </div>
             </t>
-            <t t-if="doc.company_id.receipt_footer_note">
-              <div class="center"><t t-esc="doc.company_id.receipt_footer_note"/></div>
+            <t t-if="company.receipt_footer_note">
+              <div class="center"><t t-esc="company.receipt_footer_note"/></div>
             </t>
-            <t t-else="">
-              <div class="center">谢谢惠顾！</div>
-            </t>
+            <t t-else=""><div class="center">谢谢惠顾！</div></t>
           </div>
         </div>
       </t>

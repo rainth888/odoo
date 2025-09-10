@@ -16,3 +16,7 @@ class ResConfigSettings(models.TransientModel):
     receipt_show_qr = fields.Boolean('显示二维码(订单号)', related='company_id.receipt_show_qr', readonly=False)
     receipt_footer_note = fields.Char('小票页脚备注', related='company_id.receipt_footer_note', readonly=False)
 
+    # 新增公司配置代理字段
+    receipt_business_number = fields.Char('营业编号', related='company_id.receipt_business_number', readonly=False)
+    receipt_promo_lines = fields.Text('宣传语', related='company_id.receipt_promo_lines', readonly=False)
+    receipt_slogan = fields.Char('标语', related='company_id.receipt_slogan', readonly=False)

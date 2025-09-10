@@ -1,0 +1,366 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* sale_receipt_thermal
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-10 02:26+0000\n"
+"PO-Revision-Date: 2025-09-10 02:26+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sale_receipt_thermal
+#: model:ir.actions.report,print_report_name:sale_receipt_thermal.action_report_sale_receipt_58mm_pdf
+#: model:ir.actions.report,print_report_name:sale_receipt_thermal.action_report_sale_receipt_80mm_pdf
+msgid "'Receipt-%s.pdf' % (object.name)"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields.selection,name:sale_receipt_thermal.selection__res_company__receipt_font_size__10
+msgid "10px"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields.selection,name:sale_receipt_thermal.selection__res_company__receipt_font_size__12
+msgid "12px"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields.selection,name:sale_receipt_thermal.selection__res_company__receipt_font_size__14
+msgid "14px"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields.selection,name:sale_receipt_thermal.selection__res_company__receipt_paper_width__58
+msgid "58mm"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields.selection,name:sale_receipt_thermal.selection__res_company__receipt_paper_width__80
+msgid "80mm"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields.selection,name:sale_receipt_thermal.selection__res_company__receipt_font_size__8
+msgid "8px"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.model,name:sale_receipt_thermal.model_res_company
+msgid "Companies"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.model,name:sale_receipt_thermal.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
+msgid "POS 小票"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.actions.report,name:sale_receipt_thermal.action_report_pos_receipt_58mm_pdf
+msgid "POS 小票（58mm PDF）"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.actions.report,name:sale_receipt_thermal.action_report_pos_receipt_80mm_pdf
+msgid "POS 小票（80mm PDF）"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.actions.report,name:sale_receipt_thermal.action_report_pos_receipt_58mm_html
+msgid "POS 小票（预览HTML 58mm）"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.actions.report,name:sale_receipt_thermal.action_report_pos_receipt_80mm_html
+msgid "POS 小票（预览HTML 80mm）"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "二维码"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "付款条件："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+msgid "到期日："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "单价"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+msgid "发票号："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+msgid "发票小票"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.actions.report,name:sale_receipt_thermal.action_report_invoice_receipt_58mm_pdf
+msgid "发票小票（58mm PDF）"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.actions.report,name:sale_receipt_thermal.action_report_invoice_receipt_80mm_pdf
+msgid "发票小票（80mm PDF）"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.actions.report,name:sale_receipt_thermal.action_report_invoice_receipt_58mm_html
+msgid "发票小票（预览HTML 58mm）"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.actions.report,name:sale_receipt_thermal.action_report_invoice_receipt_80mm_html
+msgid "发票小票（预览HTML 80mm）"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "品名"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "备注："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
+msgid "实收合计："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "客户："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_company__receipt_font_size
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_config_settings__receipt_font_size
+msgid "小票字体大小"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_company__receipt_paper_width
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_config_settings__receipt_paper_width
+msgid "小票纸宽"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_company__receipt_footer_note
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_config_settings__receipt_footer_note
+msgid "小票页脚备注"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "小计"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+msgid "已收："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "应付合计："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+msgid "应收合计："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+msgid "开票人："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+msgid "开票日期："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields,help:sale_receipt_thermal.field_res_company__receipt_footer_note
+#: model:ir.model.fields,help:sale_receipt_thermal.field_res_config_settings__receipt_footer_note
+msgid "打印在小票底部的附加说明"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.view_order_form_inherit_receipt_button
+msgid "打印小票(PDF)"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.view_order_form_inherit_receipt_button
+msgid "打印小票(预览)"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.view_order_form_inherit_receipt_button
+msgid "打印小票80mm(PDF)"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.view_order_form_inherit_receipt_button
+msgid "打印小票80mm(预览)"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
+msgid "收银员："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "数量"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "日期："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_company__receipt_show_qr
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_config_settings__receipt_show_qr
+msgid "显示二维码(订单号)"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_company__receipt_show_logo
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_config_settings__receipt_show_logo
+msgid "显示公司Logo"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_company__receipt_show_barcode
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_config_settings__receipt_show_barcode
+msgid "显示条码(订单号)"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+msgid "未收："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "未税："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "条码"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.res_config_settings_view_form_receipt
+msgid "热敏小票"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+msgid "状态："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "税额："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "订单号："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "谢谢惠顾！"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.res_config_settings_view_form_receipt
+msgid "谢谢惠顾，欢迎下次光临"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "销售员："
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "销售小票"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.actions.report,name:sale_receipt_thermal.action_report_sale_receipt_58mm_pdf
+msgid "销售小票（58mm PDF）"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.actions.report,name:sale_receipt_thermal.action_report_sale_receipt_80mm_pdf
+msgid "销售小票（80mm PDF）"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.actions.report,name:sale_receipt_thermal.action_report_sale_receipt_58mm_html
+msgid "销售小票（预览HTML 58mm）"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model:ir.actions.report,name:sale_receipt_thermal.action_report_sale_receipt_80mm_html
+msgid "销售小票（预览HTML 80mm）"
+msgstr ""
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
+msgid "门店："
+msgstr ""
