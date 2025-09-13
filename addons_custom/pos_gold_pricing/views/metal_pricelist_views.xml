@@ -1,0 +1,47 @@
+
+<odoo>
+  <record id="view_metal_pricelist_tree" model="ir.ui.view">
+    <field name="name">metal.pricelist.tree</field>
+    <field name="model">metal.pricelist</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name"/>
+        <field name="company_id"/>
+        <field name="metal_type"/>
+        <field name="price_per_g"/>
+        <field name="fineness_factor"/>
+        <field name="effective_date"/>
+        <field name="active"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="view_metal_pricelist_form" model="ir.ui.view">
+    <field name="name">metal.pricelist.form</field>
+    <field name="model">metal.pricelist</field>
+    <field name="arch" type="xml">
+      <form string="Daily Metal Price">
+        <sheet>
+          <group>
+            <field name="name"/>
+            <field name="company_id"/>
+            <field name="metal_type"/>
+            <field name="price_per_g"/>
+            <field name="fineness_factor"/>
+            <field name="effective_date"/>
+            <field name="active"/>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_metal_pricelist" model="ir.actions.act_window">
+    <field name="name">Daily Metal Prices</field>
+    <field name="res_model">metal.pricelist</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <menuitem id="menu_metal_root" name="Metal Pricing" parent="point_of_sale.menu_point_root"/>
+  <menuitem id="menu_metal_pricelist" name="Daily Metal Prices" parent="menu_metal_root" action="action_metal_pricelist"/>
+</odoo>

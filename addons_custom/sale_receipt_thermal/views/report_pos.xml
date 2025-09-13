@@ -8,7 +8,7 @@
           <style>
             .o_pos_receipt { font-family: "Noto Sans CJK SC","DejaVu Sans",sans-serif; line-height:1.25; color:#000; padding:2mm; margin:0 auto; }
             .center { text-align:center; } .bold{ font-weight:700;} .xs{font-size:8pt;} .muted{color:#333}
-            .line{ border-top:1px dashed #000; margin:4px 0;} table{width:100%; border-collapse:collapse;} th,td{padding:2px 0; vertical-align:top;} .r{text-align:right}
+            .line{ border-top:none !important; margin:4px 0;} .spacer{height:6px;} table{width:100%; border-collapse:collapse;} th,td{padding:2px 0; vertical-align:top;} .r{text-align:right}
           </style>
           <div class="center">
             <t t-if="doc.company_id.receipt_show_logo and doc.company_id.logo">
@@ -22,14 +22,14 @@
               <t t-esc="doc.company_id and doc.company_id.email or ''"/>
             </div>
           </div>
-          <div class="line"></div>
+          <div class="spacer"></div>
           <table>
             <tr><td>订单号：</td><td class="r" t-esc="doc.name"/></tr>
             <tr><td>日期：</td><td class="r" t-esc="doc.date_order and doc.date_order.strftime('%Y-%m-%d %H:%M')"/></tr>
             <tr><td>收银员：</td><td class="r" t-esc="doc.user_id and doc.user_id.name or ''"/></tr>
             <tr><td>门店：</td><td class="r" t-esc="doc.session_id and doc.session_id.config_id and doc.session_id.config_id.name or ''"/></tr>
           </table>
-          <div class="line"></div>
+          <div class="spacer"></div>
           <table>
             <thead><tr><th>品名</th><th class="r">数量</th><th class="r">单价</th><th class="r">小计</th></tr></thead>
             <tbody>
@@ -41,13 +41,13 @@
               </tr>
             </tbody>
           </table>
-          <div class="line"></div>
+          <div class="spacer"></div>
           <table>
             <tr><td>未税：</td><td class="r" t-esc="doc.amount_total - doc.amount_tax" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/></tr>
             <tr><td>税额：</td><td class="r" t-esc="doc.amount_tax" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/></tr>
             <tr class="bold"><td>实收合计：</td><td class="r" t-esc="doc.amount_total" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/></tr>
           </table>
-          <div class="line"></div>
+          <div class="spacer"></div>
           <div class="xs muted">
             <t t-if="doc.company_id.receipt_show_barcode">
               <div class="center" style="margin-top:4px;">

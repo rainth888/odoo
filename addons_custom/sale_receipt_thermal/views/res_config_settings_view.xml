@@ -23,8 +23,8 @@
             <group string="公司信息">
               <field name="receipt_business_number" placeholder="T2010701001070"/>
               <field name="receipt_slogan" placeholder="免税 TAX FREE"/>
-              <field name="receipt_promo_lines" placeholder="★黄金、铂金高价收购★&#10;★免费估价、鉴定★" widget="text"/>
-              <field name="receipt_footer_note" placeholder="谢谢惠顾，欢迎下次光临"/>
+              <field name="receipt_promo_lines" placeholder="多行文本，每行一条宣传语" widget="text"/>
+              <field name="receipt_footer_note" placeholder="谢谢惠顾"/>
             </group>
           </div>
         </xpath>

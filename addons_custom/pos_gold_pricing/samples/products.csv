@@ -1,0 +1,4 @@
+
+id,name,default_code,barcode,available_in_pos,pos_categ_ids/id,tracking,type,uom_id/id,list_price,standard_price
+pt_gold_ring_001,黄金戒指A,GR-A,690000000001,1,"pc_gold,pc_gold_ring",serial,product,uom.unit,0,0
+pt_gold_bangle_001,黄金手镯A,GB-A,690000000002,1,"pc_gold,pc_gold_bangle",serial,product,uom.unit,0,0

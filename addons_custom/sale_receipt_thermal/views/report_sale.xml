@@ -46,7 +46,8 @@
           <style>
             .o_sale_receipt { font-family: "Noto Sans CJK SC","DejaVu Sans",sans-serif; line-height:1.35; color:#000; padding:2mm; margin:0 auto; }
             .center { text-align:center; } .bold { font-weight:700; } .xs { font-size:8pt; } .muted { color:#333; }
-            .line { border-top:1px dashed #000; margin:6px 0; } .mb4{margin-bottom:4px}
+            .line { border-top:none !important; margin:6px 0; } .mb4{margin-bottom:4px}
+            .spacer { height:6px; }
             table { width:100%; border-collapse:collapse; } th,td { padding:2px 0; vertical-align:top; }
             .r { text-align:right; } .l{ text-align:left; }
             .list-row { display:flex; justify-content:space-between; }
@@ -62,18 +63,18 @@
           </div>
 
           <t t-if="company.receipt_promo_lines">
-            <div class="line"></div>
+            <div class="spacer"></div>
             <t t-foreach="(company.receipt_promo_lines or '').split('\n')" t-as="pline">
               <div class="center bold"><t t-esc="pline"/></div>
             </t>
           </t>
 
           <t t-if="company.receipt_slogan">
-            <div class="line"></div>
+            <div class="spacer"></div>
             <div class="center bold"><t t-esc="company.receipt_slogan"/></div>
           </t>
 
-          <div class="line"></div>
+          <div class="spacer"></div>
 
           <!-- 单据信息 -->
           <div>
@@ -85,12 +86,12 @@
               </t>
             </div>
             <div>编号：<t t-esc="doc.name"/></div>
-            <div>收据号：（）</div>
-            <div>传票号：（）</div>
+            <div>收据号：<t t-esc="doc.receipt_number or ''"/></div>
+            <div>传票号：<t t-esc="doc.voucher_number or ''"/></div>
             <div>负责人：<t t-esc="doc.user_id and doc.user_id.name or ''"/></div>
           </div>
 
-          <div class="line"></div>
+          <div class="spacer"></div>
 
           <!-- 商品明细 -->
           <div class="mb4">商品明细</div>
@@ -103,7 +104,7 @@
             </div>
           </t>
 
-          <div class="line"></div>
+          <!-- <div class="line"></div> -->
 
           <!-- 合计 -->
           <t t-set="total_qty" t-value="sum([l.product_uom_qty for l in doc.order_line])"/>
@@ -115,7 +116,7 @@
 
           <!-- 付款信息（如可用） -->
           <t t-if="doc.invoice_ids">
-            <div class="line"></div>
+            <div class="spacer"></div>
             <div class="mb4">付款</div>
             <t t-set="paid" t-value="sum([inv.amount_total - inv.amount_residual for inv in doc.invoice_ids if inv.state in ('posted','paid')])"/>
             <t t-if="paid">
@@ -133,7 +134,7 @@
             </t>
           </t>
 
-          <div class="line"></div>
+          <!-- <div class="line"></div> -->
 
           <!-- 备注与底部信息/条码 -->
           <div class="xs muted no-break">
@@ -143,11 +144,7 @@
                 <img t-att-src="'/report/barcode/Code128/%s?width=300&amp;height=60&amp;humanreadable=1' % (doc.name or '')" alt="条码"/>
               </div>
             </t>
-            <t t-if="company.receipt_show_qr">
-              <div class="center" style="margin-top:4px;">
-                <img t-att-src="'/report/barcode/QR/%s?width=150&amp;height=150' % (doc.name or '')" alt="二维码"/>
-              </div>
-            </t>
+            
             <t t-if="company.receipt_footer_note">
               <div class="center"><t t-esc="company.receipt_footer_note"/></div>
             </t>
@@ -172,12 +169,13 @@
   </template>
 
   <!-- ④ 报表动作：PDF 与 HTML 预览各一份（挂在“打印”菜单） -->
+  <data noupdate="0">
   <record id="action_report_sale_receipt_58mm_pdf" model="ir.actions.report">
     <field name="name">销售小票（58mm PDF）</field>
     <field name="model">sale.order</field>
     <field name="report_type">qweb-pdf</field>
     <field name="report_name">sale_receipt_thermal.report_sale_receipt_document</field>
-    <field name="print_report_name">'Receipt-%s.pdf' % (object.name)</field>
+    <field name="print_report_name">'Receipt-%s' % (object.name)</field>
     <field name="paperformat_id" ref="sale_receipt_thermal.paperformat_58mm_receipt"/>
     <field name="binding_model_id" ref="sale.model_sale_order"/>
     <field name="binding_type">report</field>
@@ -199,7 +197,7 @@
     <field name="model">sale.order</field>
     <field name="report_type">qweb-pdf</field>
     <field name="report_name">sale_receipt_thermal.report_sale_receipt_document_80mm</field>
-    <field name="print_report_name">'Receipt-%s.pdf' % (object.name)</field>
+    <field name="print_report_name">'Receipt-%s' % (object.name)</field>
     <field name="paperformat_id" ref="sale_receipt_thermal.paperformat_80mm_receipt"/>
     <field name="binding_model_id" ref="sale.model_sale_order"/>
     <field name="binding_type">report</field>
@@ -214,5 +212,6 @@
     <field name="binding_model_id" ref="sale.model_sale_order"/>
     <field name="binding_type">report</field>
   </record>
+  </data>
 
 </odoo>

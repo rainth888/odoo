@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-10 02:37+0000\n"
-"PO-Revision-Date: 2025-09-10 02:37+0000\n"
+"POT-Creation-Date: 2025-09-10 07:12+0000\n"
+"PO-Revision-Date: 2025-09-10 07:12+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,40 +16,50 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.view_order_form_inherit_receipt_button
+msgid "打印小票(预览)"
+msgstr "レシート印刷（プレビュー）"
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.view_order_form_inherit_receipt_button
+msgid "打印小票(PDF)"
+msgstr "レシート印刷（PDF）"
+
+#. module: sale_receipt_thermal
 #: model:ir.actions.report,print_report_name:sale_receipt_thermal.action_report_sale_receipt_58mm_pdf
 #: model:ir.actions.report,print_report_name:sale_receipt_thermal.action_report_sale_receipt_80mm_pdf
-msgid "'Receipt-%s.pdf' % (object.name)"
-msgstr ""
+msgid "'Receipt-%s' % (object.name)"
+msgstr "'Receipt-%s' % (object.name)"
 
 #. module: sale_receipt_thermal
 #: model:ir.model.fields.selection,name:sale_receipt_thermal.selection__res_company__receipt_font_size__10
 msgid "10px"
-msgstr ""
+msgstr "10px"
 
 #. module: sale_receipt_thermal
 #: model:ir.model.fields.selection,name:sale_receipt_thermal.selection__res_company__receipt_font_size__12
 msgid "12px"
-msgstr ""
+msgstr "12px"
 
 #. module: sale_receipt_thermal
 #: model:ir.model.fields.selection,name:sale_receipt_thermal.selection__res_company__receipt_font_size__14
 msgid "14px"
-msgstr ""
+msgstr "14px"
 
 #. module: sale_receipt_thermal
 #: model:ir.model.fields.selection,name:sale_receipt_thermal.selection__res_company__receipt_paper_width__58
 msgid "58mm"
-msgstr ""
+msgstr "58mm"
 
 #. module: sale_receipt_thermal
 #: model:ir.model.fields.selection,name:sale_receipt_thermal.selection__res_company__receipt_paper_width__80
 msgid "80mm"
-msgstr ""
+msgstr "80mm"
 
 #. module: sale_receipt_thermal
 #: model:ir.model.fields.selection,name:sale_receipt_thermal.selection__res_company__receipt_font_size__8
 msgid "8px"
-msgstr ""
+msgstr "8px"
 
 #. module: sale_receipt_thermal
 #: model:ir.model,name:sale_receipt_thermal.model_res_company
@@ -59,308 +69,392 @@ msgstr "会社"
 #. module: sale_receipt_thermal
 #: model:ir.model,name:sale_receipt_thermal.model_res_config_settings
 msgid "Config Settings"
-msgstr "コンフィグ設定"
+msgstr "設定"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
 msgid "POS 小票"
-msgstr ""
+msgstr "POSレシート"
 
 #. module: sale_receipt_thermal
 #: model:ir.actions.report,name:sale_receipt_thermal.action_report_pos_receipt_58mm_pdf
 msgid "POS 小票（58mm PDF）"
-msgstr ""
+msgstr "POSレシート（58mm PDF）"
 
 #. module: sale_receipt_thermal
 #: model:ir.actions.report,name:sale_receipt_thermal.action_report_pos_receipt_80mm_pdf
 msgid "POS 小票（80mm PDF）"
-msgstr ""
+msgstr "POSレシート（80mm PDF）"
 
 #. module: sale_receipt_thermal
 #: model:ir.actions.report,name:sale_receipt_thermal.action_report_pos_receipt_58mm_html
 msgid "POS 小票（预览HTML 58mm）"
-msgstr ""
+msgstr "POSレシート（プレビュー HTML 58mm）"
 
 #. module: sale_receipt_thermal
 #: model:ir.actions.report,name:sale_receipt_thermal.action_report_pos_receipt_80mm_html
 msgid "POS 小票（预览HTML 80mm）"
+msgstr "POSレシート（プレビュー HTML 80mm）"
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.res_config_settings_view_form_receipt
+msgid "T2010701001070"
+msgstr "T2010701001070"
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.res_config_settings_view_form_receipt
+msgid ""
+"★黄金、铂金高价收购★\n"
+"★免费估价、鉴定★"
 msgstr ""
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
-#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
 msgid "二维码"
-msgstr ""
+msgstr "QRコード"
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "付款"
+msgstr "お支払い"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
-#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
 msgid "付款条件："
-msgstr ""
+msgstr "支払条件："
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "传票号：（）"
+msgstr "伝票番号：（）"
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.res_config_settings_view_form_receipt
+msgid "免税 TAX FREE"
+msgstr "免税 TAX FREE"
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.res_config_settings_view_form_receipt
+msgid "公司信息"
+msgstr "会社情報"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 msgid "到期日："
-msgstr ""
+msgstr "期日："
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
-#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
 msgid "单价"
-msgstr ""
+msgstr "単価"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 msgid "发票号："
-msgstr ""
+msgstr "請求書番号："
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 msgid "发票小票"
-msgstr ""
+msgstr "請求書レシート"
 
 #. module: sale_receipt_thermal
 #: model:ir.actions.report,name:sale_receipt_thermal.action_report_invoice_receipt_58mm_pdf
 msgid "发票小票（58mm PDF）"
-msgstr ""
+msgstr "請求書レシート（58mm PDF）"
 
 #. module: sale_receipt_thermal
 #: model:ir.actions.report,name:sale_receipt_thermal.action_report_invoice_receipt_80mm_pdf
 msgid "发票小票（80mm PDF）"
-msgstr ""
+msgstr "請求書レシート（80mm PDF）"
 
 #. module: sale_receipt_thermal
 #: model:ir.actions.report,name:sale_receipt_thermal.action_report_invoice_receipt_58mm_html
 msgid "发票小票（预览HTML 58mm）"
-msgstr ""
+msgstr "請求書レシート（プレビュー HTML 58mm）"
 
 #. module: sale_receipt_thermal
 #: model:ir.actions.report,name:sale_receipt_thermal.action_report_invoice_receipt_80mm_html
 msgid "发票小票（预览HTML 80mm）"
-msgstr ""
+msgstr "請求書レシート（プレビュー HTML 80mm）"
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "合计（TOTAL）："
+msgstr "合計（TOTAL）："
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
-#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
 msgid "品名"
-msgstr ""
+msgstr "品名"
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "商品明细"
+msgstr "商品明細"
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "地址："
+msgstr "住所："
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
 msgid "备注："
-msgstr ""
+msgstr "備考："
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields,help:sale_receipt_thermal.field_res_company__receipt_promo_lines
+#: model:ir.model.fields,help:sale_receipt_thermal.field_res_config_settings__receipt_promo_lines
+msgid "多行文本，每行一条宣传语"
+msgstr "複数行テキスト。1行に1つのプロモ文"
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields,help:sale_receipt_thermal.field_res_company__receipt_business_number
+#: model:ir.model.fields,help:sale_receipt_thermal.field_res_config_settings__receipt_business_number
+msgid "如日本营业税号等"
+msgstr "例えば日本の消費税番号など"
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields,help:sale_receipt_thermal.field_res_company__receipt_slogan
+#: model:ir.model.fields,help:sale_receipt_thermal.field_res_config_settings__receipt_slogan
+msgid "如：免税 TAX FREE"
+msgstr "例：TAX FREE"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
 msgid "实收合计："
-msgstr ""
+msgstr "合計："
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
-#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
 msgid "客户："
-msgstr ""
+msgstr "顧客："
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_company__receipt_promo_lines
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_config_settings__receipt_promo_lines
+msgid "宣传语"
+msgstr "プロモ文"
 
 #. module: sale_receipt_thermal
 #: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_company__receipt_font_size
 #: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_config_settings__receipt_font_size
 msgid "小票字体大小"
-msgstr ""
+msgstr "レシート文字サイズ"
 
 #. module: sale_receipt_thermal
 #: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_company__receipt_paper_width
 #: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_config_settings__receipt_paper_width
 msgid "小票纸宽"
-msgstr ""
+msgstr "レシート紙幅"
 
 #. module: sale_receipt_thermal
 #: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_company__receipt_footer_note
 #: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_config_settings__receipt_footer_note
 msgid "小票页脚备注"
-msgstr ""
+msgstr "レシートフッターメモ"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
-#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
 msgid "小计"
-msgstr ""
+msgstr "小計"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
-msgid "已收："
-msgstr ""
-
-#. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
-msgid "应付合计："
-msgstr ""
+msgid "已收："
+msgstr "お預り："
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 msgid "应收合计："
-msgstr ""
+msgstr "支払合計："
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 msgid "开票人："
-msgstr ""
+msgstr "請求担当："
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 msgid "开票日期："
-msgstr ""
+msgstr "請求日："
 
 #. module: sale_receipt_thermal
 #: model:ir.model.fields,help:sale_receipt_thermal.field_res_company__receipt_footer_note
 #: model:ir.model.fields,help:sale_receipt_thermal.field_res_config_settings__receipt_footer_note
 msgid "打印在小票底部的附加说明"
-msgstr ""
+msgstr "レシート下部に印字する補足メモ"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.view_order_form_inherit_receipt_button
 msgid "打印小票(PDF)"
-msgstr ""
+msgstr "レシート印刷（PDF）"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.view_order_form_inherit_receipt_button
 msgid "打印小票(预览)"
-msgstr ""
+msgstr "レシート印刷（プレビュー）"
 
 #. module: sale_receipt_thermal
-#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.view_order_form_inherit_receipt_button
-msgid "打印小票80mm(PDF)"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "找零："
+msgstr "お釣り："
 
 #. module: sale_receipt_thermal
-#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.view_order_form_inherit_receipt_button
-msgid "打印小票80mm(预览)"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "收据号：（）"
+msgstr "領収書番号：（）"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
 msgid "收银员："
-msgstr ""
+msgstr "レジ担当："
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
-#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
 msgid "数量"
-msgstr ""
+msgstr "数量"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
 msgid "日期："
-msgstr ""
+msgstr "日付："
 
 #. module: sale_receipt_thermal
 #: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_company__receipt_show_qr
 #: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_config_settings__receipt_show_qr
 msgid "显示二维码(订单号)"
-msgstr ""
+msgstr "QR（注文番号）を表示"
 
 #. module: sale_receipt_thermal
 #: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_company__receipt_show_logo
 #: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_config_settings__receipt_show_logo
 msgid "显示公司Logo"
-msgstr ""
+msgstr "会社ロゴを表示"
 
 #. module: sale_receipt_thermal
 #: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_company__receipt_show_barcode
 #: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_config_settings__receipt_show_barcode
 msgid "显示条码(订单号)"
-msgstr ""
+msgstr "バーコード（注文番号）を表示"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 msgid "未收："
-msgstr ""
+msgstr "未収："
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
-#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
 msgid "未税："
-msgstr ""
+msgstr "税抜："
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
 msgid "条码"
-msgstr ""
+msgstr "バーコード"
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_company__receipt_slogan
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_config_settings__receipt_slogan
+msgid "标语"
+msgstr "スローガン"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.res_config_settings_view_form_receipt
 msgid "热敏小票"
-msgstr ""
+msgstr "サーマルレシート"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 msgid "状态："
-msgstr ""
+msgstr "ステータス："
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "电话："
+msgstr "電話："
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
-#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
 msgid "税额："
-msgstr ""
+msgstr "税額："
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "编号："
+msgstr "番号："
+
+#. module: sale_receipt_thermal
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_company__receipt_business_number
+#: model:ir.model.fields,field_description:sale_receipt_thermal.field_res_config_settings__receipt_business_number
+msgid "营业编号"
+msgstr "営業番号"
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "营业编号："
+msgstr "営業番号："
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
-#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
 msgid "订单号："
-msgstr ""
+msgstr "受注番号："
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_invoice_receipt_document
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
 msgid "谢谢惠顾！"
-msgstr ""
+msgstr "ご利用ありがとうございます。"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.res_config_settings_view_form_receipt
 msgid "谢谢惠顾，欢迎下次光临"
-msgstr ""
+msgstr "ご来店ありがとうございます。次回のご来店をお待ちしております。"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
-msgid "销售员："
-msgstr ""
-
-#. module: sale_receipt_thermal
-#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
-msgid "销售小票"
-msgstr ""
+msgid "负责人："
+msgstr "担当者："
 
 #. module: sale_receipt_thermal
 #: model:ir.actions.report,name:sale_receipt_thermal.action_report_sale_receipt_58mm_pdf
 msgid "销售小票（58mm PDF）"
-msgstr ""
+msgstr "販売レシート（58mm PDF）"
 
 #. module: sale_receipt_thermal
 #: model:ir.actions.report,name:sale_receipt_thermal.action_report_sale_receipt_80mm_pdf
 msgid "销售小票（80mm PDF）"
-msgstr ""
+msgstr "販売レシート（80mm PDF）"
 
 #. module: sale_receipt_thermal
 #: model:ir.actions.report,name:sale_receipt_thermal.action_report_sale_receipt_58mm_html
 msgid "销售小票（预览HTML 58mm）"
-msgstr ""
+msgstr "販売レシート（プレビュー HTML 58mm）"
 
 #. module: sale_receipt_thermal
 #: model:ir.actions.report,name:sale_receipt_thermal.action_report_sale_receipt_80mm_html
 msgid "销售小票（预览HTML 80mm）"
-msgstr ""
+msgstr "販売レシート（プレビュー HTML 80mm）"
 
 #. module: sale_receipt_thermal
 #: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_pos_receipt_document
 msgid "门店："
-msgstr ""
+msgstr "店舗："
+
+#. module: sale_receipt_thermal
+#: model_terms:ir.ui.view,arch_db:sale_receipt_thermal.report_sale_receipt_document
+msgid "（含消费税TAX 10%）"
+msgstr "（消費税10%を含む）"

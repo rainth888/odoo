@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <!-- 在发票表单页眉新增“发票小票”按钮（HTML预览 + PDF） -->
+    <record id="view_move_form_inherit_receipt_button" model="ir.ui.view">
+      <field name="name">account.move.form.thermal.receipt.button</field>
+      <field name="model">account.move</field>
+      <field name="inherit_id" ref="account.view_move_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//header" position="inside">
+          <button name="%(sale_receipt_thermal.action_report_invoice_receipt_58mm_html)d"
+                  string="打印发票小票(预览)"
+                  type="action"
+                  class="btn btn-secondary"
+                  invisible="move_type not in ['out_invoice', 'out_refund']"/>
+          <button name="%(sale_receipt_thermal.action_report_invoice_receipt_58mm_pdf)d"
+                  string="打印发票小票(PDF)"
+                  type="action"
+                  class="btn btn-secondary"
+                  invisible="move_type not in ['out_invoice', 'out_refund']"/>
+        </xpath>
+      </field>
+    </record>
+  </data>
+  
+</odoo>

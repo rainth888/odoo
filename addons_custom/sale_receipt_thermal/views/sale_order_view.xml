@@ -16,14 +16,7 @@
                   string="打印小票(PDF)"
                   type="action"
                   class="btn btn-secondary"/>
-          <button name="%(sale_receipt_thermal.action_report_sale_receipt_80mm_html)d"
-                  string="打印小票80mm(预览)"
-                  type="action"
-                  class="btn btn-secondary"/>
-          <button name="%(sale_receipt_thermal.action_report_sale_receipt_80mm_pdf)d"
-                  string="打印小票80mm(PDF)"
-                  type="action"
-                  class="btn btn-secondary"/>
+          
         </xpath>
       </field>
     </record>

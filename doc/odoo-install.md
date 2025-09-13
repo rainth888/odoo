@@ -16,21 +16,13 @@ docker update --restart unless-stopped pg170
 
 ## 启动odoo
 - 进入虚拟环境
+cd /mnt/d/_projects/odoo.github.rainth888/
 source .venv/bin/activate
 
 - 直接执行
-```bash
-python odoo-bin -c odoo.conf
-```
-
-- 假设容器 IP 是 172.17.0.2（请根据实际 IP 调整）
-```bash
-python odoo-bin \
-  --addons-path=addons,odoo/addons \
-  -d odoo \
-  --db_host=127.0.0.1 --db_port=5432 \
-  --db_user=proot --db_password=Qd#969kyghb!k&chFdv5axsuH+wq7
-```
+  
+python odoo-bin --addons-path=addons,addons_custom -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot -u sale_receipt_thermal
+ 
 
 # 访问odoo
 浏览器打开：`http://localhost:8069`
@@ -87,8 +79,11 @@ python odoo-bin --addons-path=addons -d odoo --db_host=172.17.0.2 --db_port=5432
 python odoo-bin --addons-path=addons -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot  -i base
 python odoo-bin --addons-path=addons -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot
 
+
+
 python odoo-bin --addons-path=addons,addons_custom -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot -u  hello_demo
 
+python odoo-bin --addons-path=addons,addons_custom -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot -u sale_receipt_thermal
 
 # ubuntu20
 python odoo-bin --addons-path=addons -d odoo --db_host=172.17.0.1 --db_port=5432 --db_user=proot --db_password=Qd#969kyghb!k&chFdv5axsuH+wq7 -i base
