@@ -14,9 +14,10 @@
         "views/stock_production_lot_views.xml"
     ],
     "assets": {
-        "point_of_sale._assets_pos": [
-            "pos_gold_pricing/static/src/js/pos_gold_pricing.js"
-        ]
+        # 暂时移除对 POS 前端的注入以避免白屏，待补丁稳定后再恢复
+        # "point_of_sale._assets_pos": [
+        #     "pos_gold_pricing/static/src/js/pos_gold_pricing.js"
+        # ]
     },
     "installable": True,
     "application": False

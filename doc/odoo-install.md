@@ -21,8 +21,9 @@ source .venv/bin/activate
 
 - 直接执行
   
-python odoo-bin --addons-path=addons,addons_custom -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot -u sale_receipt_thermal
- 
+python odoo-bin --addons-path=addons,addons_custom -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot 
+
+python odoo-bin --addons-path=addons,addons_custom -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot -u pos_gold_pricing 
 
 # 访问odoo
 浏览器打开：`http://localhost:8069`
@@ -79,11 +80,12 @@ python odoo-bin --addons-path=addons -d odoo --db_host=172.17.0.2 --db_port=5432
 python odoo-bin --addons-path=addons -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot  -i base
 python odoo-bin --addons-path=addons -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot
 
-
-
 python odoo-bin --addons-path=addons,addons_custom -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot -u  hello_demo
 
 python odoo-bin --addons-path=addons,addons_custom -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot -u sale_receipt_thermal
+
+python odoo-bin --addons-path=addons,addons_custom -d odoo --db_host=127.0.0.1 --db_port=5432 --db_user=proot --db_password=proot  -i base
+
 
 # ubuntu20
 python odoo-bin --addons-path=addons -d odoo --db_host=172.17.0.1 --db_port=5432 --db_user=proot --db_password=Qd#969kyghb!k&chFdv5axsuH+wq7 -i base
@@ -521,6 +523,12 @@ docker exec -i pg170 psql -U postgres <<'SQL'
 SELECT 'CREATE DATABASE pdemo OWNER proot'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'pdemo') \gexec
 SQL
+
+SELECT 'CREATE DATABASE odoo OWNER proot'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'odoo') \gexec
+SQL
+
+
 ```
 
 ## ③ 切到 pdemo 库开常用扩展（幂等）

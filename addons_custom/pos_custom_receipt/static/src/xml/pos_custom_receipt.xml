@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+  <!-- Custom header (English) -->
+  <t t-name="pos_custom_receipt.ReceiptHeader" t-inherit="point_of_sale.ReceiptHeader" t-inherit-mode="extension">
+    <xpath expr="." position="replace">
+      <t t-set="company" t-value="props.data.company"/>
+      <t t-set="company_name" t-value="(company &amp;&amp; (company.name || company.display_name)) || ''"/>
+      <div class="center">
+        <div class="bold" t-if="company_name" t-esc="company_name"/>
+      </div>
+      <div class="dash"/>
+    </xpath>
+  </t>
+  
+  <!-- Prepend company name before the core ReceiptHeader so it stays at the top -->
+  <t t-name="pos_custom_receipt.OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">
+    <xpath expr="//ReceiptHeader[1]" position="before">
+      <t t-set="company" t-value="(props.data.headerData &amp;&amp; props.data.headerData.company) || props.data.company"/>
+      <t t-if="company">
+        <div class="text-center">
+          <div class="fw-bolder" t-esc="company.name || company.display_name"/>
+          <div t-if="company.phone">Phone: <t t-esc="company.phone"/></div>
+          <t t-set="_bizno" t-value="company.receipt_business_number || company.vat || company.company_registry"/>
+          <div t-if="_bizno">Business No: <t t-esc="_bizno"/></div>
+          <t t-set="addr" t-value="(company.street || '') + (company.city ? (' ' + company.city) : '') + (company.state_id ? (' ' + company.state_id.name) : '') + (company.zip ? (' ' + company.zip) : '')"/>
+          <div t-if="addr" t-esc="addr"/>
+          <t t-if="company.receipt_promo_lines">
+            <t t-foreach="(company.receipt_promo_lines || '').split('\n')" t-as="line" t-key="line">
+              <div t-if="line" t-esc="line"/>
+            </t>
+          </t>
+          <div t-if="company.receipt_slogan" class="fw-bolder" t-esc="company.receipt_slogan"/>
+          <div>--------------------------------</div>
+        </div>
+      </t>
+    </xpath>
+  </t>
+  
+  <!-- Append footer note near the bottom of the receipt -->
+  <t t-name="pos_custom_receipt.OrderReceiptFooterNote" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">
+    <xpath expr="//div[contains(concat(' ', normalize-space(@class), ' '), ' pos-receipt ')]" position="inside">
+      <t t-set="company" t-value="props.data.headerData &amp;&amp; props.data.headerData.company"/>
+      <t t-if="company &amp;&amp; company.receipt_footer_note">
+        <div class="text-center">
+          <div>--------------------------------</div>
+          <div t-esc="company.receipt_footer_note"/>
+        </div>
+      </t>
+    </xpath>
+  </t>
+  
+</templates>

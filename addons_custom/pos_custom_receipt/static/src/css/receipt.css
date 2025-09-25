@@ -1,0 +1,35 @@
+/* POS Custom Thermal Receipt Style - inspired by sale_receipt_thermal */
+.pos-receipt {
+  font-size: 10px;
+  line-height: 1.25;
+  color: #000;
+  font-family: "Noto Sans CJK SC", "DejaVu Sans", Arial, sans-serif;
+}
+.pos-receipt .center { text-align: center; }
+.pos-receipt .right { float: right; }
+.pos-receipt .bold { font-weight: 700; }
+.pos-receipt .muted { color: #333; }
+.pos-receipt .xs { font-size: 8pt; }
+.pos-receipt .spacer { height: 6px; }
+.pos-receipt .dash { text-align: center; }
+.pos-receipt .dash::before { content: "--------------------------------"; }
+.pos-receipt table { width: 100%; border-collapse: collapse; }
+.pos-receipt th, .pos-receipt td { padding: 2px 0; vertical-align: top; }
+.pos-receipt .r { text-align: right; }
+.pos-receipt .logo { max-height: 40px; }
+
+/* Hide barcode and QR code irrespective of backend settings */
+.pos-receipt img#posqrcode { display: none !important; }
+.pos-receipt img[src*="/report/barcode/"] { display: none !important; }
+
+/* Hide default footer that shows "Powered by Odoo" and order reference */
+.pos-receipt .pos-receipt-order-data { display: none !important; }
+
+/* Keep default sections visible; custom layout can be layered later */
+
+/* Print-specific tweaks (可选) */
+/*
+@media print {
+  .pos-receipt { width: 58mm; }
+}
+*/
