@@ -5,7 +5,6 @@
   <record id="view_hello_item_tree" model="ir.ui.view">
     <field name="name">hello.item.tree</field>
     <field name="model">hello.item</field>
-    <field name="type" eval="False"/>
     <field name="arch" type="xml">
       <list>
         <field name="name"/>
@@ -20,7 +19,6 @@
   <record id="view_hello_item_form" model="ir.ui.view">
     <field name="name">hello.item.form</field>
     <field name="model">hello.item</field>
-    <field name="type" eval="False"/>
     <field name="arch" type="xml">
       <form string="Hello Item">
         <sheet>
@@ -40,7 +38,6 @@
   <record id="view_hello_item_search" model="ir.ui.view">
     <field name="name">hello.item.search</field>
     <field name="model">hello.item</field>
-    <field name="type" eval="False"/>
     <field name="arch" type="xml">
       <search>
         <field name="name"/>

@@ -25,14 +25,35 @@
           <t t-set="addr" t-value="(company.street || '') + (company.city ? (' ' + company.city) : '') + (company.state_id ? (' ' + company.state_id.name) : '') + (company.zip ? (' ' + company.zip) : '')"/>
           <div t-if="addr" t-esc="addr"/>
           <t t-if="company.receipt_promo_lines">
+            <br/>
             <t t-foreach="(company.receipt_promo_lines || '').split('\n')" t-as="line" t-key="line">
               <div t-if="line" t-esc="line"/>
             </t>
           </t>
-          <div t-if="company.receipt_slogan" class="fw-bolder" t-esc="company.receipt_slogan"/>
-          <div>--------------------------------</div>
+          <div t-if="company.receipt_slogan">
+            <br/>
+            <div class="fw-bolder" t-esc="company.receipt_slogan"/>
+          </div>
+          <br/>
+          <t t-set="order_date" t-value="props.data.date_order || props.data.order_date || props.data.creation_date || new Date().toISOString()"/>
+          <div>Date: <t t-esc="new Date(order_date).toLocaleString()"/></div>
+          <div>Number: <t t-esc="props.data.name || ''"/></div>
+          <div>Receipt No: <t t-esc="props.data.name || ''"/></div>
+          <div>Cashier: <t t-esc="props.data.cashier || ''"/></div>
+          <br/>
         </div>
       </t>
+    </xpath>
+  </t>
+  
+  <!-- Replace dashed lines with blank lines in OrderReceipt -->
+  <t t-name="pos_custom_receipt.OrderReceiptDashedLines" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">
+    <xpath expr="//div[@class='text-center' and contains(text(), '--------------------------------')]" position="replace">
+      <div class="text-center"><br/></div>
+    </xpath>
+    <!-- Specifically target the dashed line before TOTAL -->
+    <xpath expr="//div[@class='text-center' and contains(text(), '--------------------------------') and following-sibling::div[contains(@class, 'pos-receipt-amount') and contains(@class, 'receipt-total')]]" position="replace">
+      <div class="text-center"><br/></div>
     </xpath>
   </t>
   
@@ -42,7 +63,7 @@
       <t t-set="company" t-value="props.data.headerData &amp;&amp; props.data.headerData.company"/>
       <t t-if="company &amp;&amp; company.receipt_footer_note">
         <div class="text-center">
-          <div>--------------------------------</div>
+          <br/>
           <div t-esc="company.receipt_footer_note"/>
         </div>
       </t>

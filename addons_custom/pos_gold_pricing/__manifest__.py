@@ -11,7 +11,8 @@
     "data": [
         "security/ir.model.access.csv",
         "views/metal_pricelist_views.xml",
-        "views/stock_production_lot_views.xml"
+        "views/stock_production_lot_views.xml",
+        "views/product_template_views.xml",
     ],
     "assets": {
         # 暂时移除对 POS 前端的注入以避免白屏，待补丁稳定后再恢复

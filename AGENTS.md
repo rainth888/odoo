@@ -33,3 +33,14 @@
 - Do not commit real credentials; prefer env vars (e.g., `PGPASSWORD=...`).
 - Keep `report.url`/`web.base.url` aligned with your access URL; ensure `wkhtmltopdf` path is valid.
 
+## Task Workflow (z-todolist)
+- For every new user task, create an ID: `taskYYYYMMDDHHMM-<slug>` where `<slug>` is a short summary.
+- Record the task in `z-todolist/_todolis.md`:
+  - Paste the original request.
+  - Add a checklist of actionable steps using `[ ]` for pending and `[x]` for done.
+  - Update the checklist status as each step is completed.
+- Create a per-task log file `z-todolist/taskYYYYMMDDHHMM-<slug>.md` capturing:
+  - Summary, assumptions, and environment notes.
+  - The executed steps, commands, and files changed.
+  - Any follow‑ups or verification notes.
+- Keep changes minimal and safe; avoid breaking POS UI. Use WSL path mapping (`D:\_projects\...` → `/mnt/d/_projects/...`).

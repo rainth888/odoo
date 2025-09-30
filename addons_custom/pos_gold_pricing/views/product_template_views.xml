@@ -1,0 +1,15 @@
+<odoo>
+  <!-- Add Weight and Unit of Measure to General Information on product template -->
+  <record id="product_template_form_pos_gold_fields" model="ir.ui.view">
+    <field name="name">product.template.form.pos.gold.fields</field>
+    <field name="model">product.template</field>
+    <field name="inherit_id" ref="product.product_template_form_view"/>
+    <field name="arch" type="xml">
+      <!-- Insert after Sales Price -->
+      <xpath expr="//sheet//group//field[@name='list_price'][1]" position="after">
+        <field name="uom_id" invisible="1"/>
+        <field name="weight" invisible="1"/>
+      </xpath>
+    </field>
+  </record>
+</odoo>
