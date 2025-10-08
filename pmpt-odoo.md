@@ -1724,17 +1724,131 @@ Please improve the English phrasing first, then perform the tasks.
 
 - At the printed receipt PDF, please add a blank line before the Slogan, add the Date, Number, Receipt Number, and Person in Charge (Order Taker) under the Promo Lines with a blank line before the Date, and replace all dashed lines with blank lines.
 
+Great! 
+At the printed receipt PDF, The Date time field should be fill the value of Date Time, and add a blank line before Promo, and replace all dashed lines with blank lines.
+
+At the printed receipt PDF, The Date field before the Number and the Receipt Number, should be fill the value of Date Time, such as 2025-09-26 09:08:10,, and replace the dashed lines with blank lines before the Untaxed Amount and TOTAL.
+
+At the printed receipt PDF,replace the dashed lines with blank lines before the TOTAL.
+
+The 日期：, 编号：, 收据号：, 负责人（录单人） should be in English.
+Please improve the English phrasing first, then perform the tasks.
+- The Date, Number, Receipt Number, and Person in Charge (Cashier) fields should be displayed in English.
+
+The format of the Date should be displayed in local languarage format.
+Please improve the English phrasing first, then perform the tasks.
+> The format of the Date should be displayed in the local language format.
+
+Now, I need show the printed receipt PDF as three languarage, english, japnese and chinese, please provide the detail steps in odoo operation, attached the contant in the file D:\_projects\odoo.github.rainth888\readme-multilangruage.md.
+Please improve the English phrasing first, then perform the tasks.
+>Now, I need to show the printed receipt PDF in three languages: English, Japanese, and Chinese. Please provide detailed steps for Odoo operations and save the content to the file D:\projects\odoo.github.rainth888\readme-multilanguage.md.
+
+In the page of **Settings** → **Translations** → **Languages** , how set the default language, such as set the **English (US)**  as Default
+Please improve the English phrasing first, then perform the tasks.
+. attached the answer to the file  D:\projects\odoo.github.rainth888\readme-multilanguage.md.
+
+I can not find any option about the the **Default (Yes/No)** option in the page of Setting-Language-English(US).
+
+Translate and fill all fields of the po files in the folder of /mnt/d/_projects/odoo.github.rainth888/addons_custom/pos_custom_receipt/i18n.  
+Please improve the English phrasing first, then perform the tasks.
+
+odoo18，Please explain the meaning of the file odoo\addons_custom\pos_custom_receipt\i18n\pos_custom_receipt.pot
 
 
+Product Attributes
+Product Attributes / Values
+Sales Taxes
+Product Category    Product/Product Category/Name
+
+Product/Product Template/Tracking
+By Unique Serial Number
+Tracking
+
+there should be cancel the input box 'Lot/Serial Number(s) Requiredd' in the shop when select a product.
+tell me how to do it.
+
+It has only sales price property in the 'General Information' of the Products, It can be set the unit and g.
+But I need a 'weight' and 'Unit of Measure' property in the 'General Information' of the Products when I add a new product.
+and the sales price in the Pos is calculate by weight (such 50g) multiplied by gold price today from the addons_custom module 'pos_gold_pricing'.
+
+The addons_custom module 'pos_gold_pricing' is just supply the gold price, it needn't do other thing.
+The 'weight' and the 'Unit of Measure' property should be shown in the 'General Information' of the Products, then some product can be fill the weight and unit of measure as weight. 
+the gold product has two properties in price, one is weight multiplied by gold price, the other is unit price bultiplied by number. these two properties should show when I add new products.
+Please improve the English phrasing first, then perform the tasks.
 
 
+I can see the changing in the 'General Information', but I need the item is:
+'By Unit' or 'By Weight'
+It should be shown the 'Sales Price', 'per' 'unit of measure', always the 'unit of measure' is unit, when user select the 'By Unit'.
+It should be shown the 'Weight:', 'xx', 'per' 'unit of measure', the 'xx' is value of the weight,  always the 'unit of measure' is g, , when user select the 'By Weight'.
 
 
+in 'Sales Price' item, the delete the 'By Unit' or 'By Weight' should be in first line, the value should be in 2nd line,  it should be sales price or weight, the 'per ' 'unit of measure'(unit of g, can be select) value can be 3rd line.
 
+in 'Sales Price' item, the 'By Unit' or 'By Weight' should be in first line, 
+When selected the 'By Unit', the 2nd line should be shown the value of sales price and 'per unit', the unit can be selected by 'unit of measure' items. no third line.
+When selected the 'By Weight' , the 2nd line should be shown the value of weight and 'per g', the unit can be selecte by 'unit of measure' items. no third line.
+delete the other lines. just keep 2 lines.
+Please improve the English phrasing first, then perform the tasks.
 
+in 'Sales Price' item,
+the 'By Unit' has 2 line, it's ok.
+When selected the 'By Weight', it has 2 lines also, delete other item.
 
+the 'By Weight', the 'Weight:' should be same line with the value of the weight.
+There are extra charactor 'per g ' under the value of the weight, it needn't.
 
+the 'By Weight', the 'Weight:', the value of the weight, 'per' and the value of 'unit of measure' should be in one line.
 
+the 'By Weight' selected item, change the 'per g ' to 'g' (should be 'unit of measure'), then the second line of the the 'By Weight' just like 'Weight: 10.00 g'.
+Please improve the English phrasing first, then perform the tasks.
+
+The module D:\_projects\odoo.github.rainth888\addons_custom\product_weight_pricing.
+in the 'General Information'.
+the 'By Unit' has 2 line, it's ok.
+the 'Weight:', the value of the weight, and the value of 'unit of measure' should be in one line, just like 'Weight: 10.00 g'.
+the 'By Weight' selected item, should conference the 'By Unit' selected item style. no 'per g'. just like 'Weight: 10.00 g' in one line.
+
+see the image D:\_projects\odoo.github.rainth888\logs\2025-09-30_111320_375.png.
+the 'By Weight' item, just show the value and the 'unit of measure', these two value show in one line.
+delete the charactor 'Weight:',   'g' ,  'per'.
+
+Now， I can see the page show each line as below:
+```
+Sales Price By Weight
+23,000.00  g
+per g
+```
+delete the character 'g' on the second line, delete the character 'per' on the 3rd line.
+
+'Sales Price' item disapear
+
+under the 'By Weight' selected， delete the 'per'
+
+How can I use the module 'pos_gold_pricing', I think I can set it each day or any time.
+
+现在'By Unit'是三行了，'By Weight'还是三行。
+
+我需要的显示是：
+By Unit:
+第1行: Sales Price | By Unit
+第2行: (空) | 100.00 per unit（'unit of measure'）
+By Weight:
+第1行: Sales Price | By Weight
+第2行: (空) | 78000.00 g（'unit of measure'）
+
+reboot the odoo18.
+'By Unit' and 'By Weight' are all 2 lines.
+But, the unit and g should be 'unit of measure', default value is unit and g, can be changed by selected.
+
+Give how to use  the function pos_gold_pricing of the module pos_gold_pricing.
+
+There has a module 'pos_gold_pricing' also, support the gold price every.
+tell me how to use it.
+
+在产品页面的'General Information'下的Sales Price下，已经可以分别设置'By Unit'和'By Weight'了，当选择'By Unit'时，可以设置当前产品是计件的，下面'unit of measure'的值是unit，value是单件的价格，当选择'By Weight'时，可以设置当前产品是计重的，下面'unit of measure'的值是g（比如说选择的是g，也可能选择其他重量单位），value是产品的重量。
+这样情况下，当在pos的门店中，销售人员选择产品后，在价格计算栏就要按照计件、计重来展示价格，如果是计件，则总价格=件数*单件的价格，如果是计重，则总价格=当日金价*产品重量。
+所以，需要编写代码，将pos的门店的选择产品的方式做完善。
 
 
 
@@ -1744,10 +1858,15 @@ Please improve the English phrasing first, then perform the tasks.
 ----------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-
+Please improve the English phrasing first, then perform the tasks.
 
 注意，我的编辑环境是windows，运行的环境是wsl，所以提供的文件路径有可能是wsl路径也有可能是windows路径，所以，你应该知道路径如何转换，也知道如何找到文件。
 
+后续开发任务处理规则重大更新：
+我在项目中，创建了一个文件夹'z-todolist'，里面的主要文件是_todolis.md，每次我发布任务后，你首先要增加一个任务项'task202509270946-**'，其中'**'为任务的大致内容，需要你总结精简这个名称，然后，先把我的需求原文列出来，然后，理解需求后，分解为工作任务，把工作任务细化为列表清单，然后按照列表清单每一次独立执行，每一个列表项，最前面，都需要有方框[]，空方框表示未完任务，[x]方框表示完成任务。列完任务后，就可以逐个执行，直至任务完成。
+除了在文档_todolis.md中列出所有任务外，还需要生成一个和任务名称对应的任务执行文件，文件命名为'task202509270946-**.md',需要把完成这个任务的所有工作内容，都写入这个文件夹，做工作任务流程备忘。
+将上面这个规则写入AGENTS.md，后续所有工作内容，都需要严格执行。
+增加一个技术分析过程item，到task***.md文件中，目前看这个文件中的内容太少了。比如我需要的improve the English phrasing都没有增加进来。还有你上面的分析信息，都是特别重要的内容。
 
 
 

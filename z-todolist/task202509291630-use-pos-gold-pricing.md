@@ -32,3 +32,13 @@ Verification
 Follow-ups
 - Ensure Gram UoM exists (`uom.product_uom_gram`) or fallback shows kg.
 - Optionally gate POS logic by product’s `Pricing Method` if needed.
+
+Quick Start (Cheat Sheet)
+- Enable POS JS hook: edit `addons_custom/pos_gold_pricing/__manifest__.py` and set assets:
+  - `"assets": { "point_of_sale.assets": ["addons_custom/pos_gold_pricing/static/src/js/pos_gold_pricing.js"] }`
+- Update module and reload POS:
+  - `python odoo-bin -c odoo.conf -u pos_gold_pricing`
+- Create Daily Metal Price: POS > Metal Pricing > Daily Metal Prices.
+- Product: Available in POS, Tracking = By Unique Serial Number.
+- Lot: set `net_gold_weight`, `metal_type`, `wage_type/value`.
+- In POS: add product, select lot → price auto-fills.

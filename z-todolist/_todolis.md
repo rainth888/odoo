@@ -138,6 +138,18 @@ Checklist
 - [x] Hide Sales Price container (`list_price_uom`) and its label when By Weight
 - [ ] Update module and verify UI shows only numeric weight and no "per g"
 
+## task202509300922-bus-serialize-error-on-reload
+
+Original Request
+> Server reload logs show: psycopg2.errors.SerializationFailure: could not serialize access due to concurrent update (bus_presence) during websocket terminate.
+
+Checklist
+- [x] Explain error is transient during concurrent presence update
+- [x] Confirm no data loss; safe to ignore if sporadic
+- [x] Suggest mitigation: full server restart, hard refresh POS
+- [x] Suggest monitoring; if frequent, adjust workers/reload flow
+- [ ] Optional: add retry wrapper in custom bus hook (if needed)
+
 ## task202509291557-fix-product-view-inherit-id
 
 Original Request
