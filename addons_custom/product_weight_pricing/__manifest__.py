@@ -11,6 +11,7 @@
     ],
     "assets": {
         "point_of_sale.assets": [
+            "addons_custom/product_weight_pricing/static/src/js/pos_pricing_method.js",
             "addons_custom/product_weight_pricing/static/src/xml/pos_weight_orderline.xml",
         ],
     },

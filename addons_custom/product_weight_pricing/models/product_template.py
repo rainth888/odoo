@@ -31,6 +31,15 @@ class ProductTemplate(models.Model):
         for rec in self:
             rec.weight = (rec.weight_g or 0.0) / 1000.0
 
+    @api.model
+    def _load_pos_data_fields(self, config_id):
+        fields = super()._load_pos_data_fields(config_id)
+        extra_fields = ["pos_pricing_method", "default_metal_type", "weight"]
+        for field_name in extra_fields:
+            if field_name not in fields:
+                fields.append(field_name)
+        return fields
+
     @api.onchange("pos_pricing_method")
     def _onchange_pos_pricing_method_set_uom(self):
         """Force Unit of Measure based on pricing method.
