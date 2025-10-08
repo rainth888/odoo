@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
   <!--
-    Make By Weight lines display as: "Weight: <qty> g" in a single line.
+    Make By Weight lines display the formatted label "<price>/g x <qty>g".
     Heuristic: detect gram UoM via line.unit === 'g' (matches standard UoM name).
-    Falls back to the original layout for other units.
+    Falls back to the original layout for other units or missing data.
   -->
   <t t-name="product_weight_pricing.OrderlineByWeight"
      t-inherit="point_of_sale.Orderline"
      t-inherit-mode="extension">
     <xpath expr="//li[contains(concat(' ', normalize-space(@class), ' '), ' price-per-unit ')]" position="replace">
       <li class="price-per-unit">
-        <!-- When unit is grams, render one-line Weight display, no "per g" -->
-        <t t-if="line.unit === 'g'">
-          <span class="fw-bolder">Weight: </span>
-          <t t-esc="line.qty"/> g
+        <!-- When unit is grams, render computed label (unit price × weight) -->
+        <t t-if="line.weightPricingLabel">
+          <span class="fw-bolder" t-esc="line.weightPricingLabel"/>
         </t>
-        <!-- Default rendering for non-gram units: copy of core template -->
+        <!-- Default rendering for non-gram units or missing pricing info -->
         <t t-else="">
           <span class="qty px-1 border rounded text-bg-view fw-bolder me-1" t-esc="line.qty"/>
           <t t-if="!props.basic_receipt">
