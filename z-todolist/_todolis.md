@@ -162,3 +162,15 @@ Checklist
 - [x] Remove duplicate fallback to avoid unresolved refs
 - [x] Run module update to validate load
 - [x] Apply same fix to `pos_gold_pricing` (optional, on request)
+
+## task202510090602-pos-default-metal-field
+
+Original Request
+> localhost:8069 显示
+> 加载销售点时发生错误Invalid field 'default metal type' on model 'product.template
+
+Checklist
+- [x] 分析 POS 加载流程中对 `default_metal_type` 字段的引用来源
+- [x] 修正后端模型/视图，确保 `product.template` 上存在字段或不再请求该字段
+- [ ] 更新受影响的模块并在 POS 中复测加载
+- [ ] 记录验证步骤与结果
