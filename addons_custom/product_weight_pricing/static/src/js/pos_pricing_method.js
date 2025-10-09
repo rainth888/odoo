@@ -2,6 +2,7 @@
 
 import { patch } from "@web/core/utils/patch";
 import { formatFloat } from "@web/core/utils/numbers";
+import { formatCurrency } from "@point_of_sale/app/models/utils/currency";
 import { PosOrderline } from "@point_of_sale/app/models/pos_order_line";
 import { PosStore } from "@point_of_sale/app/store/pos_store";
 
@@ -96,11 +97,16 @@ patch(PosOrderline.prototype, {
     getDisplayData() {
         const data = _superGetDisplayData.apply(this, arguments);
 
-        if (this.isWeightPriced() && data.unit === "g") {
+        const weightData = this._weight_pricing;
+        const unitLabel = data.unit || "";
+        if (this.isWeightPriced() && weightData && unitLabel) {
             const qtyStr = this._getWeightQtyDisplay();
-            const unitPrice = data.unitPrice || "";
-            if (qtyStr && unitPrice) {
-                data.weightPricingLabel = `${unitPrice}/${data.unit} x ${qtyStr}${data.unit}`;
+            let unitPriceLabel = data.unitPrice || "";
+            if (weightData.price_per_g && this.currency) {
+                unitPriceLabel = formatCurrency(weightData.price_per_g, this.currency);
+            }
+            if (qtyStr && unitPriceLabel) {
+                data.weightPricingLabel = `${unitPriceLabel}/${unitLabel} x ${qtyStr} ${unitLabel}`;
             }
         }
 
