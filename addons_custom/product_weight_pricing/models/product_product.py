@@ -29,9 +29,16 @@ class ProductProduct(models.Model):
         weight_kg = self.weight or template.weight or 0.0
         weight_g = float_round(weight_kg * 1000.0, precision_digits=3)
 
-        metal_type = template.default_metal_type or "au_9999"
+        metal_type_id = getattr(template, "default_metal_type_id", False)
+        metal_type_code = getattr(template, "default_metal_type", False)
+        metal_type_ref = (
+            metal_type_id.id
+            if metal_type_id
+            else metal_type_code or "au_9999"
+        )
+
         price_per_g, factor = self.env["metal.pricelist"].sudo().get_price(
-            company.id, metal_type
+            company.id, metal_type_ref
         )
         factor = factor or 1.0
         unit_price = float_round(price_per_g * factor, precision_digits=2)
