@@ -1,6 +1,6 @@
 {
     "name": "Product Weight & Pricing Method",
-    "version": "18.0.1.4",
+    "version": "18.0.1.5",
     "summary": "Expose Weight, UoM, and a Pricing Method for gold products",
     "category": "Product",
     "author": "Your Team",

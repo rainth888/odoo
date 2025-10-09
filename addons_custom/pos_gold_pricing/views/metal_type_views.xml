@@ -1,0 +1,41 @@
+<odoo>
+  <record id="view_pos_metal_type_tree" model="ir.ui.view">
+    <field name="name">pos.metal.type.tree</field>
+    <field name="model">pos.metal.type</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="name"/>
+        <field name="code"/>
+        <field name="company_id"/>
+        <field name="sequence"/>
+        <field name="active"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_pos_metal_type_form" model="ir.ui.view">
+    <field name="name">pos.metal.type.form</field>
+    <field name="model">pos.metal.type</field>
+    <field name="arch" type="xml">
+      <form string="Metal Type">
+        <sheet>
+          <group>
+            <field name="name"/>
+            <field name="code"/>
+            <field name="company_id"/>
+            <field name="sequence"/>
+            <field name="active"/>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_pos_metal_type" model="ir.actions.act_window">
+    <field name="name">Metal Types</field>
+    <field name="res_model">pos.metal.type</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <menuitem id="menu_pos_metal_type" name="Metal Types" parent="menu_metal_root" action="action_pos_metal_type" sequence="5"/>
+</odoo>
