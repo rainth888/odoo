@@ -29,6 +29,12 @@
         </div>
       </xpath>
 
+      <xpath expr="//sheet//group//div[@name='list_price_uom'][1]" position="after">
+        <field name="default_metal_type_id"
+               attrs="{'invisible': [('pos_pricing_method', '!=', 'by_weight')]}"
+               options="{'no_create_edit': False}"/>
+      </xpath>
+
       <!-- Hide pricing-related rows when By Weight to ensure only two lines appear in this area -->
       <xpath expr="//sheet//group//field[@name='taxes_id']" position="attributes">
         <attribute name="invisible">pos_pricing_method == 'by_weight'</attribute>

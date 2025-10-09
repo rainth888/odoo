@@ -7,7 +7,7 @@
       <list>
         <field name="name"/>
         <field name="company_id"/>
-        <field name="metal_type"/>
+        <field name="metal_type_id" context="{'default_company_id': company_id}"/>
         <field name="price_per_g"/>
         <field name="fineness_factor"/>
         <field name="effective_date"/>
@@ -25,7 +25,7 @@
           <group>
             <field name="name"/>
             <field name="company_id"/>
-            <field name="metal_type"/>
+            <field name="metal_type_id" context="{'default_company_id': company_id}" options="{'no_create_edit': False}"/>
             <field name="price_per_g"/>
             <field name="fineness_factor"/>
             <field name="effective_date"/>
