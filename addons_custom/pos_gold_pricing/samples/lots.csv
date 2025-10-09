@@ -1,5 +1,5 @@
 
-name,product_id/id,company_id/id,metal_type,net_gold_weight,gross_weight,stone_weight_ct,wage_type,wage_value,process_technique,certificate_no
-SN-GR-A-0001,pt_gold_ring_001,base.main_company,au_9999,3.56,3.70,0.10,per_piece,120.00,hard,CERT-0001
-SN-GR-A-0002,pt_gold_ring_001,base.main_company,au_9999,3.48,3.60,0.00,per_g,10.00,3d,CERT-0002
-SN-GB-A-0001,pt_gold_bangle_001,base.main_company,au_9999,15.23,15.50,0.00,per_piece,280.00,5d,CERT-1001
+name,product_id/id,company_id/id,metal_type_id/id,net_gold_weight,gross_weight,stone_weight_ct,wage_type,wage_value,process_technique,certificate_no
+SN-GR-A-0001,pt_gold_ring_001,base.main_company,,3.56,3.70,0.10,per_piece,120.00,hard,CERT-0001
+SN-GR-A-0002,pt_gold_ring_001,base.main_company,,3.48,3.60,0.00,per_g,10.00,3d,CERT-0002
+SN-GB-A-0001,pt_gold_bangle_001,base.main_company,,15.23,15.50,0.00,per_piece,280.00,5d,CERT-1001

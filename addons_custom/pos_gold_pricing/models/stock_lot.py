@@ -18,19 +18,19 @@ class StockProductionLot(models.Model):
         ("5g", "5G"),
         ("enamel", "珐琅"),
     ], string="工艺")
-    metal_type = fields.Selection([
-        ("au_9999", "Au 999.9"),
-        ("au_999", "Au 999"),
-        ("au_au18k", "Au 18K"),
-        ("au_au14k", "Au 14K"),
-    ], string="金种/成色", help="用于匹配当日金价；也可从模板继承默认值。")
+    metal_type_id = fields.Many2one(
+        "pos.metal.type",
+        string="金种/成色",
+        help="用于匹配当日金价；也可从模板继承默认值。",
+    )
 
     def compute_pos_unit_price(self):
         """服务器侧统一算价：净金重×当日金价×成色系数 + 工费"""
         self.ensure_one()
         company_id = self.company_id.id or self.env.company.id
+        metal_type = self.metal_type_id or self.product_id.product_tmpl_id.default_metal_type_id
         price_per_g, factor = self.env["metal.pricelist"].get_price(
-            company_id, self.metal_type or "au_9999"
+            company_id, metal_type.id if metal_type else False
         )
         gold_part = (self.net_gold_weight or 0.0) * price_per_g * (factor or 1.0)
         if self.wage_type == "per_g":
