@@ -189,3 +189,15 @@ Checklist
 - [x] Update POS display to show "￥512/g x 125 g" for barcode 0520000699
 - [ ] Confirm computed total shows ￥64,000.00
 - [x] Document verification steps and any configuration assumptions
+
+## task202510100900-pos-by-weight-price-total
+
+Original Request
+> 'By Weight'类型的计重类产品价格计算，在pos店铺里，价格栏显示的内容依然是'0.00x￥880/g'，而不是'￥512/g x 125 g'形式。
+
+Checklist
+- [x] 复用上一任务的分析，确认当前实现仍显示旧格式
+- [x] 更新 POS 价签模板以使用每克金价和重量信息
+- [x] 确保总价按 512 CNY/g × 125 g 计算并展示
+- [ ] 在 POS 前端验证新显示格式
+- [ ] 记录验证步骤与配置假设

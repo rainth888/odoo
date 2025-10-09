@@ -9,6 +9,11 @@ import { PosStore } from "@point_of_sale/app/store/pos_store";
 const _superAddLineToOrder = PosStore.prototype.addLineToOrder;
 const _superGetDisplayData = PosOrderline.prototype.getDisplayData;
 
+function toNumber(value, fallback = 0) {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : fallback;
+}
+
 patch(PosStore.prototype, {
     async addLineToOrder(vals, order, opts = {}, configure = true) {
         let productRecord = vals.product_id;
@@ -22,11 +27,7 @@ patch(PosStore.prototype, {
               productRecord.raw?.pos_pricing_method
             : undefined;
 
-        if (
-            productRecord &&
-            (vals.price_unit === undefined || vals.price_unit === null) &&
-            pricingMethod === "by_weight"
-        ) {
+        if (productRecord && pricingMethod === "by_weight") {
             try {
                 const companyId = this.company?.id || false;
                 const priceData = await this.data.call(
@@ -36,29 +37,27 @@ patch(PosStore.prototype, {
                 );
 
                 if (priceData) {
-                    const weightQty = Number(priceData.weight_g);
-                    const unitPrice = Number(priceData.unit_price);
                     const weightInfo = {
-                        weight_g: Number.isFinite(weightQty) ? weightQty : 0,
-                        unit_price: Number.isFinite(unitPrice) ? unitPrice : 0,
-                        price_per_g: Number(priceData.price_per_g || 0),
-                        fineness_factor: Number(priceData.fineness_factor || priceData.factor || 1),
+                        weight_g: toNumber(priceData.weight_g),
+                        unit_price: toNumber(priceData.unit_price),
+                        price_per_g: toNumber(priceData.price_per_g),
+                        fineness_factor: toNumber(priceData.fineness_factor || priceData.factor, 1),
                     };
 
                     if (
-                        !Number.isNaN(weightQty) &&
-                        weightQty > 0 &&
-                        (vals.qty === undefined || vals.qty === 1)
+                        weightInfo.weight_g > 0 &&
+                        (vals.qty === undefined || vals.qty === null || vals.qty === 1)
                     ) {
-                        vals.qty = weightQty;
+                        vals.qty = weightInfo.weight_g;
                     }
 
-                    if (!Number.isNaN(unitPrice) && unitPrice > 0) {
-                        vals.price_unit = unitPrice;
+                    if (weightInfo.unit_price > 0) {
+                        vals.price_unit = weightInfo.unit_price;
                         vals.price_type = "manual";
+                    } else {
+                        delete vals.price_unit;
                     }
 
-                    // Preserve the raw data for UI display (Base.setup keeps fields prefixed with _)
                     vals._weight_pricing = weightInfo;
                 }
             } catch (error) {
@@ -103,10 +102,12 @@ patch(PosOrderline.prototype, {
             const qtyStr = this._getWeightQtyDisplay();
             let unitPriceLabel = data.unitPrice || "";
             if (weightData.price_per_g && this.currency) {
-                unitPriceLabel = formatCurrency(weightData.price_per_g, this.currency);
+                unitPriceLabel = `${formatCurrency(weightData.price_per_g, this.currency)}/${unitLabel}`;
+            } else if (unitPriceLabel) {
+                unitPriceLabel = `${unitPriceLabel}/${unitLabel}`;
             }
             if (qtyStr && unitPriceLabel) {
-                data.weightPricingLabel = `${unitPriceLabel}/${unitLabel} x ${qtyStr} ${unitLabel}`;
+                data.weightPricingLabel = `${unitPriceLabel} x ${qtyStr} ${unitLabel}`;
             }
         }
 
