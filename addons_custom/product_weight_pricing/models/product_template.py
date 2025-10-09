@@ -34,7 +34,7 @@ class ProductTemplate(models.Model):
     @api.model
     def _load_pos_data_fields(self, config_id):
         fields = super()._load_pos_data_fields(config_id)
-        extra_fields = ["pos_pricing_method", "default_metal_type", "weight"]
+        extra_fields = ["pos_pricing_method", "default_metal_type_id", "weight"]
         for field_name in extra_fields:
             if field_name not in fields:
                 fields.append(field_name)
