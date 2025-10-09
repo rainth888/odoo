@@ -174,3 +174,18 @@ Checklist
 - [x] 修正后端模型/视图，确保 `product.template` 上存在字段或不再请求该字段
 - [ ] 更新受影响的模块并在 POS 中复测加载
 - [ ] 记录验证步骤与结果
+
+## task202510090623-pos-by-weight-price-display
+
+Original Request
+> 'By Weight'类型的产品计价，应该是当日该产品属性对应的金价乘以该产品的重量。
+> 一个Product，条形码是0520000699，在Product下的General Information选项卡下，Sales Price下设置'By Weight'，下面填写的是125 g，在 Attributes & Variants选项卡下的Attribute是'成色'和对应的Values是'足金'。
+> Metal Pricing菜单下Daily Metal Prices中，有一个Name是'足金'，对应的Metal Type是'足金'，对应的Price (CNY/gram)是512.000。
+> 现在，在pos店铺里，选中0520000699产品后，在价格栏显示的内容是是'0.00x￥880/g', 而我希望是'￥512/g x 125 g'，显示价格是￥64000.00。
+
+Checklist
+- [x] Review current POS orderline price display for By Weight items
+- [x] Ensure metal price lookup uses attribute value's daily price (512 CNY/g)
+- [x] Update POS display to show "￥512/g x 125 g" for barcode 0520000699
+- [ ] Confirm computed total shows ￥64,000.00
+- [x] Document verification steps and any configuration assumptions
