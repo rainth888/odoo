@@ -14,6 +14,13 @@ function toNumber(value, fallback = 0) {
     return Number.isFinite(numeric) ? numeric : fallback;
 }
 
+function trimDecimalZeros(formatted) {
+    if (!formatted) {
+        return formatted;
+    }
+    return formatted.replace(/([.,]0+)(?!\d)/u, "");
+}
+
 patch(PosStore.prototype, {
     async addLineToOrder(vals, order, opts = {}, configure = true) {
         let productRecord = vals.product_id;
@@ -37,24 +44,37 @@ patch(PosStore.prototype, {
                 );
 
                 if (priceData) {
+                    const productWeightKg = toNumber(
+                        productRecord.weight ?? productRecord.product_tmpl_id?.weight
+                    );
                     const weightInfo = {
-                        weight_g: toNumber(priceData.weight_g),
+                        weight_g: toNumber(priceData.weight_g) || toNumber(productWeightKg * 1000),
                         unit_price: toNumber(priceData.unit_price),
                         price_per_g: toNumber(priceData.price_per_g),
                         fineness_factor: toNumber(priceData.fineness_factor || priceData.factor, 1),
+                        unit_label:
+                            productRecord.uom_id?.name ||
+                            productRecord.product_tmpl_id?.uom_id?.name ||
+                            "",
                     };
+
+                    if (!weightInfo.price_per_g && weightInfo.unit_price > 0) {
+                        weightInfo.price_per_g = weightInfo.unit_price;
+                    }
 
                     if (
                         weightInfo.weight_g > 0 &&
                         (vals.qty === undefined || vals.qty === null || vals.qty === 1)
                     ) {
                         vals.qty = weightInfo.weight_g;
+                    } else if (!vals.qty && weightInfo.weight_g > 0) {
+                        vals.qty = weightInfo.weight_g;
                     }
 
                     if (weightInfo.unit_price > 0) {
                         vals.price_unit = weightInfo.unit_price;
                         vals.price_type = "manual";
-                    } else {
+                    } else if (vals.price_unit === 0) {
                         delete vals.price_unit;
                     }
 
@@ -65,6 +85,32 @@ patch(PosStore.prototype, {
                     "product_weight_pricing: failed to compute weight-based price",
                     error
                 );
+            }
+
+            if (!vals._weight_pricing) {
+                const fallbackWeightKg = toNumber(
+                    productRecord.weight ?? productRecord.product_tmpl_id?.weight
+                );
+                const fallbackWeightG =
+                    fallbackWeightKg > 0 ? fallbackWeightKg * 1000 : toNumber(vals.qty) || 0;
+                const fallbackUnit =
+                    productRecord.uom_id?.name || productRecord.product_tmpl_id?.uom_id?.name || "";
+                const fallbackUnitPrice = toNumber(vals.price_unit);
+                if (fallbackWeightG || fallbackUnitPrice) {
+                    vals._weight_pricing = {
+                        weight_g: fallbackWeightG,
+                        unit_price: fallbackUnitPrice || undefined,
+                        price_per_g: fallbackUnitPrice || undefined,
+                        fineness_factor: 1,
+                        unit_label: fallbackUnit,
+                    };
+                }
+            }
+            if (
+                vals._weight_pricing?.weight_g > 0 &&
+                (vals.qty === undefined || vals.qty === null || vals.qty === 1)
+            ) {
+                vals.qty = vals._weight_pricing.weight_g;
             }
         }
 
@@ -96,18 +142,44 @@ patch(PosOrderline.prototype, {
     getDisplayData() {
         const data = _superGetDisplayData.apply(this, arguments);
 
-        const weightData = this._weight_pricing;
-        const unitLabel = data.unit || "";
-        if (this.isWeightPriced() && weightData && unitLabel) {
-            const qtyStr = this._getWeightQtyDisplay();
-            let unitPriceLabel = data.unitPrice || "";
-            if (weightData.price_per_g && this.currency) {
-                unitPriceLabel = `${formatCurrency(weightData.price_per_g, this.currency)}/${unitLabel}`;
-            } else if (unitPriceLabel) {
+        const weightData = this._weight_pricing || {};
+        const unitLabel = data.unit || weightData.unit_label || "";
+        if (this.isWeightPriced()) {
+            const decimals = this.models["decimal.precision"].find(
+                (dp) => dp.name === "Product Unit of Measure"
+            )?.digits || 2;
+            const parsedWeight = toNumber(weightData.weight_g);
+            const grams = parsedWeight > 0 ? parsedWeight : this.qty;
+            const qtyStr = grams
+                ? trimDecimalZeros(formatFloat(grams, { digits: [69, decimals] }))
+                : "";
+            let pricePerUnit =
+                weightData.price_per_g && weightData.price_per_g > 0
+                    ? weightData.price_per_g
+                    : weightData.unit_price && grams
+                    ? weightData.unit_price
+                    : this.price_unit;
+            let unitPriceLabel = "";
+            if (pricePerUnit && this.currency) {
+                unitPriceLabel = trimDecimalZeros(
+                    formatCurrency(pricePerUnit, this.currency)
+                );
+            } else if (data.unitPrice) {
+                unitPriceLabel = data.unitPrice;
+            }
+
+            if (unitLabel && unitPriceLabel) {
                 unitPriceLabel = `${unitPriceLabel}/${unitLabel}`;
             }
+
             if (qtyStr && unitPriceLabel) {
-                data.weightPricingLabel = `${unitPriceLabel} x ${qtyStr} ${unitLabel}`;
+                data.weightPricingLabel = `${unitPriceLabel} x ${qtyStr} ${unitLabel}`.trim();
+            }
+            if (qtyStr) {
+                data.qty = qtyStr;
+            }
+            if (unitLabel) {
+                data.unit = unitLabel;
             }
         }
 
