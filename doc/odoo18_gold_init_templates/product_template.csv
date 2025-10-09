@@ -1,0 +1,4 @@
+id,name,default_code,barcode,available_in_pos,type,uom_id/id,to_weight,pos_categ_ids/id,list_price,standard_price,tracking
+pt_ringA,黄金戒指A,GR-A,690000000001,1,product,uom.product_uom_unit,0,"pc_gold,pc_gold_ring",2988,1500,serial
+pt_ringK,K金戒指K1,KR-K1,690000000021,1,product,uom.product_uom_unit,0,"pc_k,pc_k_ring",3288,1800,serial
+pt_gold_bulk,足金散件,AU-BULK,690000000100,1,product,uom.product_uom_kgm,1,pc_gold,680000,0,serial

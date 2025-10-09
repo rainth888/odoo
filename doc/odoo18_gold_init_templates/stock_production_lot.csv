@@ -1,0 +1,4 @@
+name,product_id/id,company_id/id,barcode,metal_type_id/id,net_gold_weight,gross_weight,stone_weight_ct,wage_type,wage_value,process_technique,certificate_no
+SN-GR-A-0001,pp_ringA_15,base.main_company,9900000000017,pos_gold_pricing.metal_type_au_9999,3.56,3.7,0.1,per_piece,120.0,3d,CERT-0001
+SN-GR-A-0002,pp_ringA_15,base.main_company,9900000000024,pos_gold_pricing.metal_type_au_9999,3.48,3.6,0.0,per_g,10.0,3d,CERT-0002
+SN-GR-A-0015,pp_ringA_16,base.main_company,9900000000154,pos_gold_pricing.metal_type_au_9999,3.85,3.95,0.05,per_piece,150.0,3d,CERT-0015

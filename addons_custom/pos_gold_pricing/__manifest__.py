@@ -10,6 +10,8 @@
     "depends": ["point_of_sale", "stock"],
     "data": [
         "security/ir.model.access.csv",
+        "data/metal_type_data.xml",
+        "views/metal_type_views.xml",
         "views/metal_pricelist_views.xml",
         "views/stock_production_lot_views.xml",
         "views/product_template_views.xml",

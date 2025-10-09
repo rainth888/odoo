@@ -1,0 +1,5 @@
+product_tmpl_id/id,attribute_id/id,value_ids/id
+pt_ringA,attr_ring_size,"v_size_15,v_size_16"
+pt_ringA,attr_fineness,v_fineness_au9999
+pt_ringA,attr_process,v_proc_3d
+pt_ringA,attr_mainstone,v_stone_none

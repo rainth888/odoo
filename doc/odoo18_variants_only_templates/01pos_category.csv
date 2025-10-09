@@ -1,0 +1,8 @@
+id,name,parent_id/id
+pc_gold,黄金,
+pc_gold_ring,戒指,pc_gold
+pc_gold_bangle,手镯,pc_gold
+pc_k,K金,
+pc_k_ring,戒指,pc_k
+pc_inlay,镶嵌,
+pc_jade,玉石,

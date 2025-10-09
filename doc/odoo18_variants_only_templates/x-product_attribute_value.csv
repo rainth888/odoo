@@ -1,0 +1,10 @@
+id,name,attribute_id/id
+v_size_15,15,attr_ring_size
+v_size_16,16,attr_ring_size
+v_size_17,17,attr_ring_size
+v_fineness_au9999,Au 999.9,attr_fineness
+v_fineness_18k,18K,attr_fineness
+v_proc_3d,3D,attr_process
+v_proc_hard,硬金,attr_process
+v_stone_none,无,attr_mainstone
+v_stone_diamond,钻石,attr_mainstone

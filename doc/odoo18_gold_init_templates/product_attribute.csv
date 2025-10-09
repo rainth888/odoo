@@ -1,0 +1,5 @@
+id,name,create_variant
+attr_ring_size,戒指号,always
+attr_fineness,成色,no_variant
+attr_process,工艺,no_variant
+attr_mainstone,主石,no_variant

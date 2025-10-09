@@ -11,7 +11,7 @@
       <xpath expr="//sheet/notebook" position="inside">
         <page string="Jewelry">
           <group>
-            <field name="metal_type"/>
+            <field name="metal_type_id"/>
             <field name="net_gold_weight"/>
             <field name="gross_weight"/>
             <field name="stone_weight_ct"/>

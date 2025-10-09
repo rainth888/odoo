@@ -1,0 +1,4 @@
+id,product_tmpl_id/id,attribute_value_ids/id,default_code,barcode,list_price,standard_price
+pp_ringA_15,pt_ringA,v_size_15,GR-A-15,690000000015,2988,1500
+pp_ringA_16,pt_ringA,v_size_16,GR-A-16,690000000016,2988,1500
+pp_ringK_16,pt_ringK,v_size_16,KR-K1-16,690000000026,3288,1800

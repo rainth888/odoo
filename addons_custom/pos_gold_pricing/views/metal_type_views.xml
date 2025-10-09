@@ -1,0 +1,71 @@
+
+<odoo>
+  <!-- Metal Type Tree View -->
+  <record id="view_metal_type_tree" model="ir.ui.view">
+    <field name="name">metal.type.tree</field>
+    <field name="model">metal.type</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="sequence" widget="handle"/>
+        <field name="name"/>
+        <field name="code"/>
+        <field name="fineness_factor"/>
+        <field name="active"/>
+      </list>
+    </field>
+  </record>
+
+  <!-- Metal Type Form View -->
+  <record id="view_metal_type_form" model="ir.ui.view">
+    <field name="name">metal.type.form</field>
+    <field name="model">metal.type</field>
+    <field name="arch" type="xml">
+      <form string="Metal Type">
+        <sheet>
+          <div class="oe_button_box" name="button_box">
+            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+              <field name="active" widget="boolean_button" options="{'terminology': 'archive'}"/>
+            </button>
+          </div>
+          <group>
+            <group>
+              <field name="name"/>
+              <field name="code"/>
+            </group>
+            <group>
+              <field name="fineness_factor"/>
+              <field name="sequence"/>
+            </group>
+          </group>
+          <group>
+            <field name="description" placeholder="描述此金属类型的特点..."/>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <!-- Metal Type Action -->
+  <record id="action_metal_type" model="ir.actions.act_window">
+    <field name="name">Metal Types</field>
+    <field name="res_model">metal.type</field>
+    <field name="view_mode">list,form</field>
+    <field name="help" type="html">
+      <p class="o_view_nocontent_smiling_face">
+        Create a new Metal Type
+      </p>
+      <p>
+        Configure metal types (e.g., Au 999.9, Au 18K, Ag 999, Pt 950) 
+        to be used in daily metal pricing.
+      </p>
+    </field>
+  </record>
+
+  <!-- Menu Item -->
+  <menuitem id="menu_metal_type" 
+            name="Metal Types" 
+            parent="menu_metal_root" 
+            action="action_metal_type"
+            sequence="1"/>
+</odoo>
+

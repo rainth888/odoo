@@ -1,0 +1,3 @@
+name,company_id/id,metal_type_id/id,price_per_g,fineness_factor,effective_date,active
+Au9999-2025-09-15,base.main_company,pos_gold_pricing.metal_type_au_9999,680.0,1.0,2025-09-15,1
+18K-2025-09-15,base.main_company,pos_gold_pricing.metal_type_au_18k,520.0,0.75,2025-09-15,1

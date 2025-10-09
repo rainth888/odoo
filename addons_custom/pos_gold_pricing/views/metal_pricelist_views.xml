@@ -7,7 +7,7 @@
       <list>
         <field name="name"/>
         <field name="company_id"/>
-        <field name="metal_type"/>
+        <field name="metal_type_id"/>
         <field name="price_per_g"/>
         <field name="fineness_factor"/>
         <field name="effective_date"/>
@@ -25,7 +25,7 @@
           <group>
             <field name="name"/>
             <field name="company_id"/>
-            <field name="metal_type"/>
+            <field name="metal_type_id"/>
             <field name="price_per_g"/>
             <field name="fineness_factor"/>
             <field name="effective_date"/>
@@ -43,5 +43,5 @@
   </record>
 
   <menuitem id="menu_metal_root" name="Metal Pricing" parent="point_of_sale.menu_point_root"/>
-  <menuitem id="menu_metal_pricelist" name="Daily Metal Prices" parent="menu_metal_root" action="action_metal_pricelist"/>
+  <menuitem id="menu_metal_pricelist" name="Daily Metal Prices" parent="menu_metal_root" action="action_metal_pricelist" sequence="10"/>
 </odoo>
