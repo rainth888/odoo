@@ -237,3 +237,15 @@ Checklist
 - [x] 更新文档 `doc/product_full_workflow_cn.md`，补充详细步骤说明
 - [x] 自查文档格式与措辞，确保与现有内容一致
 - [x] 提交代码并准备 PR 描述
+
+## task202510100355-product-workflow-bilingual
+
+Original Request
+> 将文档./doc/product_full_workflow_cn.md中，所有的操作步骤，前面中文后面标记英文，这样我好在英文界面下操作。
+
+Checklist
+- [x] 创建任务执行记录文件 `z-todolist/task202510100355-product-workflow-bilingual.md`
+- [x] 梳理文档中需要标注英文的操作步骤
+- [x] 为每个操作步骤补充对应英文描述
+- [x] 自查文档排版与标点，确保中英并列清晰
+- [x] 总结变更并更新待办记录
