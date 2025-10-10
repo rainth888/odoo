@@ -190,6 +190,17 @@ Checklist
 - [ ] Confirm computed total shows ￥64,000.00
 - [x] Document verification steps and any configuration assumptions
 
+## task202510100210-product-workflow-guide
+
+Original Request
+> odoo18，我需要有一个产品全流程的详细操作说明，入库、销售、退货、盘点、库存统计的全流程操作说明，需要step by step的讲解，包括模块、菜单选项操作等。
+
+Checklist
+- [x] 理解产品全流程涉及的模块与主要菜单
+- [x] 编写包含入库、销售、退货、盘点、库存统计的逐步操作说明
+- [x] 复核操作步骤确保逻辑连贯、无遗漏
+- [x] 在任务日志中记录分析、步骤与总结
+
 ## task202510100900-pos-by-weight-price-total
 
 Original Request
