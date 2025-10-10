@@ -138,6 +138,16 @@ Checklist
 - [x] Hide Sales Price container (`list_price_uom`) and its label when By Weight
 - [ ] Update module and verify UI shows only numeric weight and no "per g"
 
+## task202510100949-activate-multi-uom
+
+Original Request
+> 如何'库存设置中启用“多计量单位”'
+
+Checklist
+- [x] 解读需求并确认是在库存设置中启用多计量单位功能
+- [x] 整理启用多计量单位的界面步骤
+- [x] 给出验证启用结果的方法
+
 ## task202509300922-bus-serialize-error-on-reload
 
 Original Request
