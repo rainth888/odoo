@@ -58,7 +58,7 @@
 2. **计件产品（按数量采购）（Unit-Based Products）**
    1. 在`常规信息`页签：（On the General Information tab:）
       - `计量单位` 选择“件/个”等数量单位。（Set Unit of Measure to pieces, such as Units.）
-      - `采购计量单位` 保持一致（通常同样为“件”）。（Keep the Purchase UoM consistent, typically Units.）
+      - `采购计量单位` 保持一致（通常同样为“件”）。该字段位于“常规信息”页签右侧的“计量单位”区块，在`计量单位`字段正下方；若页面未显示，请先在库存设置中启用“多计量单位”后刷新表单。（Keep the Purchase UoM consistent, typically Units. The field sits on the General Information tab in the Units of Measure block on the right, directly below Unit of Measure; enable Multi-Units of Measure in Inventory settings and reload if it does not appear.）
       - `销售价格` 或 `成本` 填写每件价格。（Enter the per-unit sales price or cost.）
    2. 切换至`采购`页签：（Switch to the Purchase tab:）
       - 在`供应商列表`中添加供应商，`价格`填写“每件采购价”，`最小数量`填写1。（Add vendors with unit purchase prices and a minimum quantity of 1.）

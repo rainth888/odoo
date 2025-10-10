@@ -249,3 +249,14 @@ Checklist
 - [x] 为每个操作步骤补充对应英文描述
 - [x] 自查文档排版与标点，确保中英并列清晰
 - [x] 总结变更并更新待办记录
+
+## task202510101530-describe-purchase-uom
+
+Original Request
+> 文档./doc/product_full_workflow_cn.md中下面的描述，详细说明一下如何找到`采购计量单位`这个操作位置。
+
+Checklist
+- [x] Review the existing instructions around purchase UoM in the product workflow doc
+- [x] Update `doc/product_full_workflow_cn.md` to explain how to find the Purchase UoM field
+- [x] Record execution details in the dedicated task log
+- [x] Verify formatting and instructions in the updated documentation
