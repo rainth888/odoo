@@ -226,3 +226,14 @@ Checklist
 - [x] 调整代码以展示“￥512/g x 125 g”格式
 - [x] 确保总价显示与 512 × 125 一致
 - [ ] 在 POS 中复测并记录验证结果
+## task202510101200-purchase-piece-weight-doc
+
+Original Request
+> 目前有两类产品，一类是计件的，每件有每件的单价，一类是计重的，每个产品进货是按重量g来计量的，那么在采购环节，我应该如何具体操作，或者在产品基础主数据方面，该如何操作，需要详细说明步骤，补充到文档./doc/product_full_workflow_cn.md中。
+
+Checklist
+- [x] 创建任务执行文件 `z-todolist/task202510101200-purchase-piece-weight-doc.md`
+- [x] 理解并整理计件与计重产品在采购环节与主数据的操作流程
+- [x] 更新文档 `doc/product_full_workflow_cn.md`，补充详细步骤说明
+- [x] 自查文档格式与措辞，确保与现有内容一致
+- [x] 提交代码并准备 PR 描述
