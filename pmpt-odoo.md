@@ -1846,17 +1846,60 @@ Give how to use  the function pos_gold_pricing of the module pos_gold_pricing.
 There has a module 'pos_gold_pricing' also, support the gold price every.
 tell me how to use it.
 
+在分支'Branch 18.0.chowtaiking'中进行代码完善。
 在产品页面的'General Information'下的Sales Price下，已经可以分别设置'By Unit'和'By Weight'了，当选择'By Unit'时，可以设置当前产品是计件的，下面'unit of measure'的值是unit，value是单件的价格，当选择'By Weight'时，可以设置当前产品是计重的，下面'unit of measure'的值是g（比如说选择的是g，也可能选择其他重量单位），value是产品的重量。
 这样情况下，当在pos的门店中，销售人员选择产品后，在价格计算栏就要按照计件、计重来展示价格，如果是计件，则总价格=件数*单件的价格，如果是计重，则总价格=当日金价*产品重量。
 所以，需要编写代码，将pos的门店的选择产品的方式做完善。
 
+'By Weight'类型的产品计价，应该是当日该产品属性对应的金价乘以该产品的重量。
+一个Product，条形码是0520000699，在Product下的General Information选项卡下，Sales Price下设置'By Weight'，下面填写的是125 g，在 Attributes & Variants选项卡下的Attribute是'成色'和对应的Values是'足金'。
+Metal Pricing菜单下Daily Metal Prices中，有一个Name是'足金'，对应的Metal Type是'足金'，对应的Price (CNY/gram)是512.000。
+现在，在pos店铺里，选中0520000699产品后，在价格栏显示的内容是是'1.00x￥880/g', 而我希望是'￥512/g x 125 g'，显示价格是￥64000.00。
+请查看页面截图./logs/2025-10-09_173404_674.png
+
+测试了一下，问题并没有修复成功，继续修复。
+'By Weight'类型的计重类产品价格计算，在pos店铺里，价格栏显示的内容依然是'1.00x￥880/g'，而不是'￥512/g x 125 g'形式。
+请查看页面截图./logs/2025-10-09_173404_674.png
 
 
+
+回滚上面的代码。
+正常完成我前面描述的需求即可。
+不要随意在代码里增加Metal Type内容，我会在菜单中选择，并自己手动配置。
+所有的参数类的配置，都不要写死在代码里。
+
+,这里面890元应该是从当日金价中获取的。
+产品如果是'By Unit'，价格选项是正确的。
+
+对于Metal Pricing菜单下Daily Metal Prices中的Metal Type，我需要如何操作才能维护这个Metal Type属性中的内容。
+
+给我一个云服务器选型建议，具体是选择一台云服务器，阿里云虚拟服务器，需要安装odoo18应用及对应的数据库系统，服务器地址在香港，用户在日本，实际使用用户大概是3人，产品上传大概有1000个品种，带产品图片。
+需要能让在日本工作的人员能够轻松打开网页访问服务器。
+
+在Product中的Attributes & Variants下的Attribute是'成色'和Values是'足金'，
+General Information
+Attribute
+成色
+Attributes & Variants
+Sales
+Point of Sa
+Values
+足金
+Purchase
+Inventory
+Configure
+Add a line
+
+odoo18，我需要有一个产品全流程的详细操作说明，入库、销售、退货、盘点、库存统计的全流程操作说明，需要step by step的讲解，包括模块、菜单选项操作等。
 
 
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------
+0520000699  weight
+0520000035	unit
+
+Branch 18.0.chowtaiking
 
 Please improve the English phrasing first, then perform the tasks.
 

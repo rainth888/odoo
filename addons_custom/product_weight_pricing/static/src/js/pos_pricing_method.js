@@ -35,13 +35,22 @@ patch(PosStore.prototype, {
             : undefined;
 
         if (productRecord && pricingMethod === "by_weight") {
+            console.log('[POS Weight Pricing] 检测到 By Weight 产品:', productRecord.name);
+            console.log('[POS Weight Pricing] Product ID:', productRecord.id);
+            console.log('[POS Weight Pricing] Pricing Method:', pricingMethod);
+            
             try {
                 const companyId = this.company?.id || false;
+                console.log('[POS Weight Pricing] Company ID:', companyId);
+                console.log('[POS Weight Pricing] 调用 RPC: pos_compute_price_by_weight');
+                
                 const priceData = await this.data.call(
                     "product.product",
                     "pos_compute_price_by_weight",
                     [[productRecord.id], companyId]
                 );
+
+                console.log('[POS Weight Pricing] RPC 返回数据:', priceData);
 
                 if (priceData) {
                     const productWeightKg = toNumber(
@@ -79,10 +88,15 @@ patch(PosStore.prototype, {
                     }
 
                     vals._weight_pricing = weightInfo;
+                    console.log('[POS Weight Pricing] ✓ Weight Info 已设置:', weightInfo);
+                    console.log('[POS Weight Pricing] ✓ vals.qty =', vals.qty);
+                    console.log('[POS Weight Pricing] ✓ vals.price_unit =', vals.price_unit);
+                } else {
+                    console.warn('[POS Weight Pricing] ⚠ RPC 返回数据为空');
                 }
             } catch (error) {
-                console.warn(
-                    "product_weight_pricing: failed to compute weight-based price",
+                console.error(
+                    "[POS Weight Pricing] ✗ RPC 调用失败:",
                     error
                 );
             }
@@ -144,6 +158,11 @@ patch(PosOrderline.prototype, {
 
         const weightData = this._weight_pricing || {};
         const unitLabel = data.unit || weightData.unit_label || "";
+        
+        console.log('[POS Weight Display] getDisplayData 调用');
+        console.log('[POS Weight Display] isWeightPriced:', this.isWeightPriced());
+        console.log('[POS Weight Display] _weight_pricing:', this._weight_pricing);
+        
         if (this.isWeightPriced()) {
             const decimals = this.models["decimal.precision"].find(
                 (dp) => dp.name === "Product Unit of Measure"
@@ -174,6 +193,11 @@ patch(PosOrderline.prototype, {
 
             if (qtyStr && unitPriceLabel) {
                 data.weightPricingLabel = `${unitPriceLabel} x ${qtyStr} ${unitLabel}`.trim();
+                console.log('[POS Weight Display] ✓ weightPricingLabel 已生成:', data.weightPricingLabel);
+            } else {
+                console.warn('[POS Weight Display] ⚠ weightPricingLabel 未生成');
+                console.log('  - qtyStr:', qtyStr);
+                console.log('  - unitPriceLabel:', unitPriceLabel);
             }
             if (qtyStr) {
                 data.qty = qtyStr;
@@ -183,6 +207,7 @@ patch(PosOrderline.prototype, {
             }
         }
 
+        console.log('[POS Weight Display] 最终 displayData:', data);
         return data;
     },
 });

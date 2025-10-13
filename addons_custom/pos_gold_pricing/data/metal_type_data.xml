@@ -10,6 +10,14 @@
             <field name="description">足金 999.9，纯度最高</field>
         </record>
 
+        <record id="metal_type_zu_jin" model="metal.type">
+            <field name="name">足金</field>
+            <field name="code">zu_jin</field>
+            <field name="fineness_factor">1.0</field>
+            <field name="sequence">11</field>
+            <field name="description">足金，与 Au 999.9 等价</field>
+        </record>
+
         <record id="metal_type_au_999" model="metal.type">
             <field name="name">Au 999</field>
             <field name="code">au_999</field>
