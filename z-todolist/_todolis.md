@@ -270,3 +270,18 @@ Checklist
 - [x] Update `doc/product_full_workflow_cn.md` to explain how to find the Purchase UoM field
 - [x] Record execution details in the dedicated task log
 - [x] Verify formatting and instructions in the updated documentation
+
+## task202510131120-setup-odoo18-server
+
+Original Request
+> 我新申请了一个云服务器，ubuntu22.4，两个存储盘分别都是80G。
+> 要准备安装生产环境的odoo18系统，从零开始装，数据库需要使用docker来装。
+> 需要帮我写一个完整的，详细的过程，包括但不限于：加载硬盘，合理分配两个硬盘的应用存储，安装数据库、odoo18（我有github库代码，Branch_18.0.chowtaiking分支）使用nginx配置外网访问，外网域名jpp.chwwdk.com。
+> 将整体业务流程写入z-todolist。
+
+Checklist
+- [x] 建立任务执行文件并整理原始需求
+- [x] 完成磁盘规划与挂载步骤说明
+- [x] 整理Docker化PostgreSQL与Odoo 18部署流程
+- [x] 编写Nginx对外发布与域名配置步骤
+- [x] 将完整流程同步到任务文件并准备答复
