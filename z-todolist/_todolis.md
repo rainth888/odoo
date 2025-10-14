@@ -1,5 +1,18 @@
 # To-Do List
 
+## task202510140303-config-service-warning
+
+Original Request
+> 完善'配置 / 系统管理 / 系统服务'选项卡页面，./component/webapp/src/components/Setting_new/ConfigSystemManagementSystemServices.vue
+> '预览连接数'是必填项，当用户删除数据框中的数据后，需要立刻有警告信息出现在数据框旁边。
+> 这个功能可以完全参考页面'配置 / 系统管理 / RS-485'选项卡页面，./component/webapp/src/components/Setting_new/ConfigSystemManagementRs485.vue中'解码器地址'的警告方式，只要数字在框内被清空时，即刻展示警告信息。
+
+Checklist
+- [x] Review RS-485 tab validation expectations and outline the required empty-field warning behavior
+- [x] Update `ConfigSystemManagementSystemServices.vue` to mirror immediate warning behavior on clearing the preview connection count
+- [x] Reason through the warning toggle to ensure it appears instantly when the field is cleared and hides once a valid value returns
+- [x] Document changes and verification steps in task log
+
 ## task202509270946-todolist-rule-update
 
 Original Request
